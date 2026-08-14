@@ -1,0 +1,71 @@
+window.WEDDING = {
+  groom: {
+    name: "Hải",
+    fullName: "Nguyễn Văn Hải",
+    role: "Chú Rể",
+    father: "Nguyễn Văn A",
+    mother: "Trần Thị B",
+    bio:
+      "Hải mang trong mình sự điềm đạm, chân thành và bản lĩnh của một chàng trai luôn sống có trách nhiệm. Anh không quá cầu kỳ trong lời nói, nhưng luôn thể hiện tình yêu và sự quan tâm bằng những hành động giản dị. Chính sự ấm áp và đáng tin cậy ấy đã trở thành điểm tựa vững chắc cho người con gái anh yêu.",
+  },
+  bride: {
+    name: "Thảo",
+    fullName: "Lê Thị Thảo",
+    role: "Cô Dâu",
+    father: "Lê Văn C",
+    mother: "Phạm Thị D",
+    bio:
+      "Thảo mang trong mình nét dịu dàng, tinh tế và sự chân thành trong từng cử chỉ. Nàng luôn lan tỏa nguồn năng lượng tích cực bằng nụ cười ấm áp và trái tim đầy yêu thương. Chính sự nhẹ nhàng ấy đã khiến những người xung quanh luôn cảm thấy bình yên và gần gũi.",
+  },
+  weddingDate: "2026-12-12T11:00:00+07:00",
+  weddingDateLabel: "12-12-2026",
+  quote: "Two hearts, one journey, forever begins today.",
+  events: [
+    {
+      title: "LỄ NẠP TÀI",
+      date: "2026-12-11",
+      time: "08:00",
+      placeLabel: "TẠI: GIA ĐÌNH NHÀ GÁI",
+      address: "Địa chỉ nhà gái — cập nhật sau",
+      map: "https://maps.google.com",
+    },
+    {
+      title: "LỄ THÀNH HÔN",
+      date: "2026-12-12",
+      time: "11:00",
+      placeLabel: "TẠI: GIA ĐÌNH NHÀ TRAI",
+      address: "Địa chỉ nhà trai — cập nhật sau",
+      map: "https://maps.google.com",
+    },
+  ],
+  gifts: [
+    {
+      side: "Chú rể",
+      name: "Nguyễn Văn Hải",
+      bank: "Vietcombank",
+      bin: "970436",
+      account: "0123456789",
+    },
+    {
+      side: "Cô dâu",
+      name: "Lê Thị Thảo",
+      bank: "Techcombank",
+      bin: "970407",
+      account: "9876543210",
+    },
+  ],
+  suggestions: [
+    "Chúc mừng hạnh phúc! Chúc hai bạn trăm năm hạnh phúc!",
+    "Chúc mừng ngày trọng đại tới hai bạn. Hạnh phúc bền lâu và trọn vẹn nhé!",
+    "Chúc mừng hạnh phúc hai bạn. Chúc hai bạn bên nhau đầu bạc răng long, sớm có thiên thần nhỏ nhé!",
+    "Chúc hai bạn ngày vui hạnh phúc. Hãy yêu thương nhau thật nhiều và sống thật hạnh phúc nha!",
+    "Chúc hai bạn sớm có con đàn cháu đống, cửa nhà lúc nào cũng đầm ấm, yên vui nhé!",
+    "Thật vui vì cuối cùng ngày này cũng tới với bạn. Tôi thành tâm chúc hai bạn thật nhiều hạnh phúc!",
+    "Một chương mới đã mở ra với hai bạn rồi. Mong cuộc sống mới của cả hai sẽ tràn ngập hy vọng và niềm vui!",
+    "Chúc đôi trai tài gái sắc hạnh phúc trọn vẹn, luôn yêu thương nhau thật nhiều!",
+    "Cầu mong cuộc sống sau này của hai vợ chồng thật thuận hòa, may mắn, làm ăn phát tài nha.",
+    "Tôi mong tình yêu của hai bạn thật bền chặt, gắn bó để xây dựng tổ ấm yên bình, hạnh phúc!",
+    "Happy wedding! Chúc hai bạn có cuộc sống mới ngập tràn tiếng cười và niềm vui!",
+    "Chúc anh/chị/em trăm năm hạnh phúc, thuận vợ thuận chồng.",
+  ],
+};
