@@ -25,7 +25,7 @@
 
   <header class="site-header" id="header">
     <div class="container nav-inner">
-      <a class="logo" href="#home">H<span class="heart">♥</span>T</a>
+      <a class="logo" href="#home" id="logo">H<span class="heart">♥</span>T</a>
       <button class="nav-toggle" id="navToggle" aria-label="Menu">
         <i class="fa fa-bars"></i>
       </button>
@@ -40,11 +40,7 @@
   </header>
 
   <section id="home" class="hero">
-    <div class="hero-slides" id="heroSlides">
-      <div class="hero-slide active" style="background-image:url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1920&q=80')"></div>
-      <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1511285560929-80b456fe9e0f?auto=format&fit=crop&w=1920&q=80')"></div>
-      <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=1920&q=80')"></div>
-    </div>
+    <div class="hero-slides" id="heroSlides"></div>
     <div class="hero-overlay"></div>
     <div class="hero-caption">
       <div class="heart-row">
@@ -52,11 +48,11 @@
         <i class="fa fa-heart"></i>
         <i class="fa fa-heart"></i>
       </div>
-      <h3>We're Getting Married!</h3>
-      <h1><span>Hải</span> &amp; <span>Thảo</span></h1>
+      <h3 id="heroTagline">We're Getting Married!</h3>
+      <h1 id="heroNames"><span>Hải</span> &amp; <span>Thảo</span></h1>
       <div class="save-date">
-        SAVE THE DATE
-        <strong>12-12-2026</strong>
+        <span id="saveDateLabel">SAVE THE DATE</span>
+        <strong id="saveDateValue">12-12-2026</strong>
       </div>
     </div>
     <button class="hero-nav prev" id="heroPrev" aria-label="Previous"><i class="fa fa-angle-left"></i></button>
@@ -69,50 +65,44 @@
 
   <section id="couple" class="section">
     <div class="container">
-      <h2 class="section-title">Cặp đôi</h2>
+      <h2 class="section-title" id="coupleTitle">Cặp đôi</h2>
       <div class="couple-grid">
         <article class="person">
           <div class="person-photo">
-            <img src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?auto=format&fit=crop&w=800&q=80" alt="Chú rể Hải">
-            <span>Chú Rể</span>
+            <img id="groomPhoto" src="" alt="Chú rể">
+            <span id="groomRole">Chú Rể</span>
           </div>
-          <h3>Hải</h3>
+          <h3 id="groomName">Hải</h3>
           <div class="parents">
-            <p><span>Con ông:</span> Nguyễn Văn A</p>
-            <p><span>Con bà:</span> Trần Thị B</p>
+            <p><span>Con ông:</span> <em id="groomFather"></em></p>
+            <p><span>Con bà:</span> <em id="groomMother"></em></p>
           </div>
-          <p class="bio" data-full="Hải mang trong mình sự điềm đạm, chân thành và bản lĩnh của một chàng trai luôn sống có trách nhiệm. Anh không quá cầu kỳ trong lời nói, nhưng luôn thể hiện tình yêu và sự quan tâm bằng những hành động giản dị. Chính sự ấm áp và đáng tin cậy ấy đã trở thành điểm tựa vững chắc cho người con gái anh yêu.">
-            Hải mang trong mình sự điềm đạm, chân thành và bản lĩnh của một chàng trai lu...
-            <button class="see-more" type="button">Xem thêm <i class="fa fa-angle-down"></i></button>
-          </p>
+          <p class="bio" id="groomBio"></p>
         </article>
         <article class="person">
           <div class="person-photo">
-            <img src="https://images.unsplash.com/photo-1595408066740-ba1262cd7868?auto=format&fit=crop&w=800&q=80" alt="Cô dâu Thảo">
-            <span>Cô Dâu</span>
+            <img id="bridePhoto" src="" alt="Cô dâu">
+            <span id="brideRole">Cô Dâu</span>
           </div>
-          <h3>Thảo</h3>
+          <h3 id="brideName">Thảo</h3>
           <div class="parents">
-            <p><span>Con ông:</span> Lê Văn C</p>
-            <p><span>Con bà:</span> Phạm Thị D</p>
+            <p><span>Con ông:</span> <em id="brideFather"></em></p>
+            <p><span>Con bà:</span> <em id="brideMother"></em></p>
           </div>
-          <p class="bio" data-full="Thảo mang trong mình nét dịu dàng, tinh tế và sự chân thành trong từng cử chỉ. Nàng luôn lan tỏa nguồn năng lượng tích cực bằng nụ cười ấm áp và trái tim đầy yêu thương. Chính sự nhẹ nhàng ấy đã khiến những người xung quanh luôn cảm thấy bình yên và gần gũi.">
-            Thảo mang trong mình nét dịu dàng, tinh tế và sự chân thành trong từng cử chỉ...
-            <button class="see-more" type="button">Xem thêm <i class="fa fa-angle-down"></i></button>
-          </p>
+          <p class="bio" id="brideBio"></p>
         </article>
       </div>
       <div class="center">
-        <a class="btn-wish" href="#wishes"><i class="fa fa-pencil-square-o"></i> Gửi lời chúc</a>
+        <a class="btn-wish" href="#wishes" id="wishBtn"><i class="fa fa-pencil-square-o"></i> Gửi lời chúc</a>
       </div>
     </div>
   </section>
 
-  <section class="countdown-band">
+  <section class="countdown-band" id="countdownBand">
     <div class="band-overlay"></div>
     <div class="container countdown-inner">
       <div>
-        <h2>Wedding Countdown</h2>
+        <h2 id="countdownTitle">Wedding Countdown</h2>
         <div class="clock" id="clock">
           <div><strong id="d">00</strong><span>Ngày</span></div>
           <div><strong id="h">00</strong><span>Giờ</span></div>
@@ -126,30 +116,30 @@
 
   <section id="events" class="section events">
     <div class="container">
-      <h2 class="section-title">Sự Kiện Cưới</h2>
+      <h2 class="section-title" id="eventsTitle">Sự Kiện Cưới</h2>
       <div class="events-layout">
         <div class="events-banner">
-          <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=900&q=80" alt="Sự kiện cưới">
+          <img id="eventsBanner" src="" alt="Sự kiện cưới">
         </div>
         <div class="event-list" id="eventList"></div>
       </div>
     </div>
   </section>
 
-  <section class="quote-band">
+  <section class="quote-band" id="quoteBand">
     <div class="band-overlay"></div>
     <div class="container quote-inner">
-      <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=400&q=80" alt="">
+      <img id="quoteImage" src="" alt="">
       <div>
-        <h2>Love Quote</h2>
-        <p>"Two hearts, one journey, forever begins today."</p>
+        <h2 id="quoteTitle">Love Quote</h2>
+        <p id="quoteText"></p>
       </div>
     </div>
   </section>
 
   <section id="gallery" class="section">
     <div class="container">
-      <h2 class="section-title">Album Hình Cưới</h2>
+      <h2 class="section-title" id="galleryTitle">Album Hình Cưới</h2>
       <div class="gallery-grid" id="galleryGrid"></div>
       <div class="center">
         <button class="btn-outline" id="btnMoreGallery" type="button">Tất cả hình ảnh</button>
@@ -159,10 +149,10 @@
 
   <section id="wishes" class="section wishes">
     <div class="container">
-      <h2 class="section-title">Sổ Lưu Bút</h2>
+      <h2 class="section-title" id="wishesTitle">Sổ Lưu Bút</h2>
       <div class="wishes-grid">
         <form class="wish-form" id="wishForm">
-          <h4>Cảm ơn bạn đã dành những lời chúc tốt đẹp cho ngày hạnh phúc của chúng mình❤️</h4>
+          <h4 id="wishesIntro"></h4>
           <input type="text" name="name" placeholder="Nhập họ tên*" required>
           <input type="email" name="email" placeholder="Nhập email">
           <div class="textarea-wrap">
@@ -178,13 +168,13 @@
     </div>
   </section>
 
-  <footer class="footer">
+  <footer class="footer" id="siteFooter">
     <div class="footer-overlay"></div>
     <div class="footer-note">
-      <h2>Thank you!</h2>
-      <p>Hải &amp; Thảo</p>
+      <h2 id="footerThanks">Thank you!</h2>
+      <p id="footerNames">Hải &amp; Thảo</p>
     </div>
-    <p class="copy">Hải &amp; Thảo Wedding Invitation</p>
+    <p class="copy" id="footerCopy"></p>
   </footer>
 
   <div class="lightbox" id="lightbox">
@@ -197,7 +187,7 @@
   <div class="modal" id="giftModal">
     <div class="modal-card">
       <button class="modal-close" id="giftClose">&times;</button>
-      <h3><i class="fa fa-gift"></i> Hộp mừng cưới</h3>
+      <h3 id="giftTitle"><i class="fa fa-gift"></i> Hộp mừng cưới</h3>
       <div class="gift-grid" id="giftGrid"></div>
     </div>
   </div>
@@ -212,6 +202,7 @@
   <audio id="bgMusic" loop preload="none"></audio>
 
   <script src="js/config.js"></script>
+  <script src="js/store.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
