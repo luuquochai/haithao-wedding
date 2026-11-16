@@ -1,0 +1,177 @@
+{
+  "saveTheDate": "Save The Date",
+  "groomShort": "Hoàng Long",
+  "brideShort": "Bảo Ngọc",
+  "ceremonyTitle": "THÔNG TIN LỄ CƯỚI",
+  "groomParentTitle": "Ông Bà",
+  "brideParentTitle": "Ông Bà",
+  "groomFather": "Đặng Văn Thắng",
+  "groomMother": "Bùi Thị Mai",
+  "groomAddress": "Quận 1, TP. Hồ Chí Minh",
+  "brideFather": "Vũ Đức Trung",
+  "brideMother": "Ngô Thị Hạnh",
+  "brideAddress": "Quận 3, TP. Hồ Chí Minh",
+  "announcement": "TRÂN TRỌNG BÁO TIN\nLỄ THÀNH HÔN CỦA CON CHÚNG TÔI",
+  "groomFull": "Đặng Hoàng Long",
+  "groomOrder": "Trưởng Nam",
+  "brideFull": "Vũ Bảo Ngọc",
+  "brideOrder": "Út Nữ",
+  "ceremonyPlace": "LỄ THÀNH HÔN ĐƯỢC CỬ HÀNH TẠI\nTƯ GIA",
+  "albumTitle": "Album Ảnh",
+  "partyTitle": "THÔNG TIN TIỆC CƯỚI",
+  "partyIntro": "Tiệc cưới sẽ diễn ra vào lúc:",
+  "receptionLabel": "Đón khách",
+  "partyStartLabel": "Khai tiệc",
+  "receptionTime": "17:30",
+  "countdownTitle": "Cùng đếm ngược",
+  "addToCalendar": "Thêm vào lịch",
+  "rsvpButton": "XÁC NHẬN THAM DỰ",
+  "venueTitle": "Tiệc cưới sẽ tổ chức tại",
+  "venueAddress": "Trung Tâm Hội Nghị White Palace, 194 Hoàng Văn Thụ, Phường 9, Quận Phú Nhuận, TP. Hồ Chí Minh",
+  "directionsLabel": "Chỉ đường",
+  "dressTitle": "DRESS CODE",
+  "dressDesc": "Trang phục dự tiệc",
+  "timelineTitle": "LỊCH TRÌNH NGÀY CƯỚI",
+  "guestbookTitle": "Sổ lưu bút",
+  "guestbookSubmit": "GỬI LỜI CHÚC",
+  "giftTitle": "Hộp Quà Mừng",
+  "thankYou": "Sự hiện diện của quý khách là niềm vinh hạnh của gia đình chúng tôi!",
+  "seoTitle": "Mẫu Thiệp Minimalism Đỏ Đậm - Thiệp Cưới Tối Giản Sang Trọng",
+  "envelopeGreeting": "Thân Mời",
+  "openButton": "Mở thiệp",
+  "heroPhoto": "/images/demo/cdecf6cfe2.webp",
+  "ceremonyAtPrefix": "VÀO LÚC",
+  "ceremonyTime": "09:00",
+  "ceremonyDate": "2026-01-03",
+  "ceremonyLunar": "Tức ngày 15 tháng 11 năm Ất Tỵ",
+  "partyDate": "2026-01-03",
+  "partyTime": "18:00",
+  "partyLunar": "Tức ngày 15 tháng 11 năm Ất Tỵ",
+  "monthPrefix": "THÁNG ",
+  "countdownPast": "Đã diễn ra",
+  "calendarEventTitle": "Đám cưới {groomFull} & {brideFull}",
+  "calendarEventDetails": "Tiệc cưới của {groomFull} & {brideFull} tại {venueAddress}",
+  "mapEmbedUrl": "",
+  "mapDirectionsUrl": "",
+  "creditLink": "https://chungdoi.com",
+  "credit": "chungdoi.com",
+  "gallery": [
+    "/images/demo/abd329aeb2.webp",
+    "/images/demo/09c78712bd.webp",
+    "/images/demo/d7695e2fed.webp",
+    "/images/demo/07db56b959.webp",
+    "/images/demo/a054d52f9d.webp",
+    "/images/demo/1cfc881768.webp",
+    "/images/demo/e13655d0de.webp"
+  ],
+  "dressColors": [
+    "#511419",
+    "#8C3A3F",
+    "#C9A24A",
+    "#ECE4D8"
+  ],
+  "timeline": [
+    {
+      "time": "17:00",
+      "label": "Đón khách",
+      "icon": ""
+    },
+    {
+      "time": "18:00",
+      "label": "Khai tiệc",
+      "icon": "/images/themes/minimalism-dark-red/camera.webp"
+    },
+    {
+      "time": "18:30",
+      "label": "Nghi thức cưới",
+      "icon": "/images/themes/minimalism-dark-red/cake.webp"
+    },
+    {
+      "time": "19:00",
+      "label": "Cắt bánh & nâng ly",
+      "icon": "/images/themes/minimalism-dark-red/cook.webp"
+    },
+    {
+      "time": "20:30",
+      "label": "Kết thúc tiệc",
+      "icon": ""
+    }
+  ],
+  "guestbook": [
+    {
+      "name": "Duy Khang",
+      "message": "Chúc mừng ngày vui của hai bạn, trăm năm hạnh phúc bền lâu!",
+      "time": "2026-07-26T05:30:49.000Z"
+    },
+    {
+      "name": "Lan Chi",
+      "message": "Đẹp đôi quá! Chúc hai bạn sống bên nhau đầu bạc răng long.",
+      "time": "2026-07-26T05:30:49.000Z"
+    },
+    {
+      "name": "Tuấn Anh",
+      "message": "Mừng hạnh phúc hai bạn! Chúc gia đình nhỏ luôn đầy ắp tiếng cười.",
+      "time": "2026-07-26T05:30:49.000Z"
+    },
+    {
+      "name": "Khánh Vy",
+      "message": "Chúc cô dâu chú rể luôn giữ được nụ cười này mãi mãi nhé!",
+      "time": "2026-07-26T05:30:49.000Z"
+    },
+    {
+      "name": "Gia Bảo",
+      "message": "Nhìn thiệp là thấy tình yêu rồi. Chúc hai bạn trăm năm viên mãn!",
+      "time": "2026-07-26T05:30:49.000Z"
+    },
+    {
+      "name": "Phương Anh",
+      "message": "Chúc đám cưới thật trọn vẹn và ấm áp. Hạnh phúc nhé hai bạn!",
+      "time": "2026-07-26T05:30:49.000Z"
+    },
+    {
+      "name": "Minh Đức",
+      "message": "Cuối cùng cũng tới ngày trọng đại, chúc mừng cặp đôi xứng lứa vừa đôi!",
+      "time": "2026-07-26T05:30:49.000Z"
+    },
+    {
+      "name": "Thu Hà",
+      "message": "Chúc hai bạn mãi mãi yêu thương và bên nhau trọn đời!",
+      "time": "2026-07-26T05:30:49.000Z"
+    },
+    {
+      "name": "Hoàng Long",
+      "message": "Mẫu thiệp đẹp quá, tông đỏ đô sang trọng ghê. Chúc mừng hai bạn!",
+      "time": "2026-07-26T05:30:49.000Z"
+    },
+    {
+      "name": "Ngọc Trâm",
+      "message": "Chúc Tuấn Kiệt và Minh Anh trăm năm hạnh phúc, sớm sinh quý tử nhé!",
+      "time": "2026-07-26T05:30:49.000Z"
+    }
+  ],
+  "guestbookNamePlaceholder": "Nhập tên*",
+  "guestbookMessagePlaceholder": "Nhập lời chúc*",
+  "gifts": [
+    {
+      "label": "Chú Rể - TRAN TUAN KIET",
+      "bank": "Vietcombank",
+      "number": "1023456789",
+      "holder": "TRAN TUAN KIET",
+      "qr": "/images/qr/groom.png"
+    },
+    {
+      "label": "Cô Dâu - LE MINH ANH",
+      "bank": "Techcombank",
+      "number": "9988776655",
+      "holder": "LE MINH ANH",
+      "qr": "/images/qr/bride.png"
+    }
+  ],
+  "saveQrLabel": "Lưu QR",
+  "music": {
+    "enabled": true,
+    "url": "https://cdn.chungdoi.com/music/50-nam-ve-sau.mp3",
+    "volume": 0.5
+  },
+  "giftHint": "Nhấn để mở"
+}

@@ -1,0 +1,161 @@
+(function () {
+  'use strict';
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var D = {}; // working copy of content
+  // ---------- schema ----------
+  // t: text | area | date | time | img | url | num | color
+  var SCHEMA = [
+    ['Phong bì & SEO', [
+      ['seoTitle', 'Tiêu đề trang (tab trình duyệt)', 't', 'wide'],
+      ['envelopeGreeting', 'Lời mời trên phong bì', 't'], ['openButton', 'Nút mở thiệp', 't'],
+      ['groomShort', 'Tên ngắn chú rể', 't'], ['brideShort', 'Tên ngắn cô dâu', 't']]],
+    ['Đầu trang', [
+      ['saveTheDate', 'Dòng "Save The Date"', 't'], ['heroPhoto', 'Ảnh polaroid đầu trang', 'img', 'wide']]],
+    ['Thông tin lễ cưới', [
+      ['ceremonyTitle', 'Tiêu đề khối', 't'],
+      ['groomParentTitle', 'Danh xưng nhà trai', 't'], ['groomFather', 'Bố nhà trai', 't'], ['groomMother', 'Mẹ nhà trai', 't'], ['groomAddress', 'Địa chỉ nhà trai', 'area'],
+      ['brideParentTitle', 'Danh xưng nhà gái', 't'], ['brideFather', 'Bố nhà gái', 't'], ['brideMother', 'Mẹ nhà gái', 't'], ['brideAddress', 'Địa chỉ nhà gái', 'area'],
+      ['announcement', 'Lời báo tin', 'area', 'wide'],
+      ['groomFull', 'Họ tên đầy đủ chú rể', 't'], ['groomOrder', 'Thứ bậc chú rể', 't'],
+      ['brideFull', 'Họ tên đầy đủ cô dâu', 't'], ['brideOrder', 'Thứ bậc cô dâu', 't'],
+      ['ceremonyPlace', 'Địa điểm làm lễ', 'area', 'wide'],
+      ['ceremonyAtPrefix', 'Chữ trước giờ lễ', 't'], ['ceremonyTime', 'Giờ lễ', 'time'], ['ceremonyDate', 'Ngày lễ', 'date'],
+      ['ceremonyLunar', 'Ngày âm lịch (lễ)', 't', 'wide'], ['monthPrefix', 'Tiền tố tháng (VD: "THÁNG ")', 't']]],
+    ['Album ảnh', [['albumTitle', 'Tiêu đề album', 't']], 'gallery'],
+    ['Tiệc cưới', [
+      ['partyTitle', 'Tiêu đề khối', 't'], ['partyIntro', 'Câu dẫn', 't', 'wide'],
+      ['partyDate', 'Ngày tiệc', 'date'], ['partyTime', 'Giờ khai tiệc', 'time'], ['receptionTime', 'Giờ đón khách', 'time'],
+      ['receptionLabel', 'Nhãn đón khách', 't'], ['partyStartLabel', 'Nhãn khai tiệc', 't'],
+      ['partyLunar', 'Ngày âm lịch (tiệc)', 't', 'wide'], ['countdownTitle', 'Tiêu đề đếm ngược', 't'], ['countdownPast', 'Chữ khi đã qua ngày', 't'],
+      ['addToCalendar', 'Nút thêm vào lịch', 't'], ['calendarEventTitle', 'Tiêu đề sự kiện lịch ({groomFull}, {brideFull})', 't', 'wide'],
+      ['calendarEventDetails', 'Chi tiết sự kiện lịch', 'area', 'wide'], ['rsvpButton', 'Nút xác nhận tham dự', 't']]],
+    ['Bản đồ & Dress code', [
+      ['venueTitle', 'Tiêu đề địa điểm', 't'], ['venueAddress', 'Địa chỉ tổ chức', 'area', 'wide'],
+      ['mapEmbedUrl', 'URL nhúng bản đồ (để trống = tự tạo từ địa chỉ)', 'url', 'wide'],
+      ['mapDirectionsUrl', 'URL chỉ đường (để trống = tự tạo)', 'url', 'wide'], ['directionsLabel', 'Nhãn nút chỉ đường', 't'],
+      ['dressTitle', 'Tiêu đề dress code', 't'], ['dressDesc', 'Mô tả dress code', 't']], 'dress'],
+    ['Lịch trình', [['timelineTitle', 'Tiêu đề', 't']], 'timeline'],
+    ['Sổ lưu bút', [['guestbookTitle', 'Tiêu đề', 't'], ['guestbookSubmit', 'Nút gửi', 't'], ['guestbookNamePlaceholder', 'Placeholder tên', 't'], ['guestbookMessagePlaceholder', 'Placeholder lời chúc', 't']], 'guestbook'],
+    ['Hộp quà', [['giftTitle', 'Tiêu đề', 't'], ['giftHint', 'Dòng gợi ý', 't'], ['saveQrLabel', 'Nhãn nút lưu QR', 't']], 'gifts'],
+    ['Chân trang & Nhạc', [['thankYou', 'Lời cảm ơn', 'area', 'wide'], ['credit', 'Chữ credit', 't'], ['creditLink', 'Link credit', 'url']], 'music']
+  ];
+
+  // ---------- helpers ----------
+  var toastT;
+  function toast(m) { var t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(function () { t.classList.remove('on'); }, 2200); }
+  function api(path, method, data) {
+    return fetch(path, { method: method || 'GET', headers: data ? { 'Content-Type': 'application/json' } : {}, body: data ? JSON.stringify(data) : undefined, credentials: 'same-origin' })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || r.status); return j; }); });
+  }
+  function el(tag, attrs, kids) { var e = document.createElement(tag); Object.keys(attrs || {}).forEach(function (k) { if (k === 'class') e.className = attrs[k]; else if (k === 'text') e.textContent = attrs[k]; else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), attrs[k]); else e.setAttribute(k, attrs[k]); }); (kids || []).forEach(function (c) { e.appendChild(c); }); return e; }
+  function upload(file) {
+    return new Promise(function (ok, no) {
+      var r = new FileReader(); r.onload = function () { api('/api/upload', 'POST', { data: r.result }).then(function (j) { ok(j.url); }, no); }; r.onerror = no; r.readAsDataURL(file);
+    });
+  }
+  // generic field: returns element; get/set via obj[key]
+  function field(obj, key, label, type, wide) {
+    var lab = el('label', { class: 'f' + (wide ? ' wide' : '') }); lab.appendChild(el('span', { text: label }));
+    var v = obj[key] == null ? '' : obj[key], inp;
+    if (type === 'img') {
+      var im = el('img', { src: v || '', alt: '' }); inp = el('input', { type: 'text', value: v, placeholder: '/images/... hoặc URL' });
+      var file = el('input', { type: 'file', accept: 'image/*', class: 'hidden' });
+      var up = el('button', { type: 'button', class: 'sm', text: 'Tải ảnh lên', onclick: function () { file.click(); } });
+      file.addEventListener('change', function () { if (!file.files[0]) return; up.textContent = 'Đang tải…'; upload(file.files[0]).then(function (u) { inp.value = u; obj[key] = u; im.src = u; toast('Đã tải ảnh lên'); }, function (e) { toast('Lỗi: ' + e.message); }).then(function () { up.textContent = 'Tải ảnh lên'; }); });
+      inp.addEventListener('input', function () { obj[key] = inp.value; im.src = inp.value; });
+      var box = el('div', { class: 'img' }, [im, el('div', { class: 'c' }, [inp, el('div', {}, [up, file])])]);
+      lab.appendChild(box); return lab;
+    }
+    if (type === 'area') inp = el('textarea'), inp.value = v;
+    else inp = el('input', { type: type === 't' ? 'text' : type === 'num' ? 'number' : type }), inp.value = v;
+    inp.addEventListener('input', function () { obj[key] = type === 'num' ? +inp.value : inp.value; });
+    lab.appendChild(inp); return lab;
+  }
+  function listEditor(arr, mk, fields, addLabel, hint) {
+    var wrap = el('div'); if (hint) wrap.appendChild(el('p', { class: 'hint', text: hint }));
+    var list = el('div'); wrap.appendChild(list);
+    function draw() {
+      list.innerHTML = '';
+      arr.forEach(function (it, i) {
+        var row = el('div', { class: 'row' });
+        fields(it).forEach(function (f) { row.appendChild(f); });
+        row.appendChild(el('div', { class: 'tools' }, [
+          el('button', { type: 'button', class: 'sm', text: '↑', onclick: function () { if (i > 0) { arr.splice(i - 1, 0, arr.splice(i, 1)[0]); draw(); } } }),
+          el('button', { type: 'button', class: 'sm', text: '↓', onclick: function () { if (i < arr.length - 1) { arr.splice(i + 1, 0, arr.splice(i, 1)[0]); draw(); } } }),
+          el('button', { type: 'button', class: 'sm del', text: 'Xoá', onclick: function () { arr.splice(i, 1); draw(); } })]));
+        list.appendChild(row);
+      });
+    }
+    draw();
+    wrap.appendChild(el('button', { type: 'button', class: 'sm', text: '+ ' + addLabel, onclick: function () { arr.push(mk()); draw(); } }));
+    return wrap;
+  }
+  var EXTRA = {
+    gallery: function () {
+      D.gallery = D.gallery || [];
+      var wrap = el('div', {}, [el('p', { class: 'hint', text: 'Danh sách ảnh album (hiển thị dạng cover-flow 3D). Kéo thứ tự bằng nút ↑ ↓.' })]);
+      var arr = D.gallery.map(function (s) { return { src: s }; }); D.gallery = null;
+      wrap.appendChild(listEditor(arr, function () { return { src: '' }; }, function (it) { return [field(it, 'src', 'Ảnh', 'img', true)]; }, 'Thêm ảnh'));
+      wrap._collect = function () { D.gallery = arr.map(function (a) { return a.src; }).filter(Boolean); };
+      return wrap;
+    },
+    dress: function () {
+      var arr = (D.dressColors || []).map(function (c) { return { c: c }; });
+      var wrap = el('div', {}, [el('h3', { text: 'Màu dress code' })]);
+      wrap.appendChild(listEditor(arr, function () { return { c: '#511419' }; }, function (it) { return [field(it, 'c', 'Màu', 'color')]; }, 'Thêm màu'));
+      wrap._collect = function () { D.dressColors = arr.map(function (a) { return a.c; }); };
+      return wrap;
+    },
+    timeline: function () {
+      D.timeline = D.timeline || [];
+      return listEditor(D.timeline, function () { return { time: '', label: '', icon: '' }; }, function (it) { return [field(it, 'time', 'Giờ', 't'), field(it, 'label', 'Nội dung', 't'), field(it, 'icon', 'Icon (để trống = không có)', 'img', true)]; }, 'Thêm mốc', 'Các mốc lịch trình ngày cưới.');
+    },
+    guestbook: function () {
+      D.guestbook = D.guestbook || [];
+      return el('div', {}, [el('h3', { text: 'Lời chúc mẫu' }), listEditor(D.guestbook, function () { return { name: '', message: '', time: '' }; }, function (it) { return [field(it, 'name', 'Tên', 't'), field(it, 'time', 'Thời gian (ISO, VD 2026-07-26T05:30:49Z; hiển thị theo giờ máy khách)', 't'), field(it, 'message', 'Lời chúc', 'area', true)]; }, 'Thêm lời chúc')]);
+    },
+    gifts: function () {
+      D.gifts = D.gifts || [];
+      return el('div', {}, [el('h3', { text: 'Tài khoản mừng cưới' }), listEditor(D.gifts, function () { return { label: '', bank: '', number: '', holder: '', qr: '' }; }, function (it) { return [field(it, 'label', 'Tiêu đề (VD: Chú Rể - TÊN)', 't'), field(it, 'bank', 'Ngân hàng', 't'), field(it, 'number', 'Số tài khoản', 't'), field(it, 'holder', 'Chủ tài khoản', 't'), field(it, 'qr', 'Ảnh QR', 'img', true)]; }, 'Thêm tài khoản')]);
+    },
+    music: function () {
+      D.music = D.music || { enabled: true, url: '', volume: .5 };
+      var m = D.music, g = el('div', { class: 'grid' });
+      var cb = el('input', { type: 'checkbox' }); cb.checked = !!m.enabled; cb.addEventListener('change', function () { m.enabled = cb.checked; });
+      g.appendChild(el('label', { class: 'f' }, [el('span', { text: 'Bật nhạc nền' }), cb]));
+      g.appendChild(field(m, 'url', 'URL file nhạc (mp3)', 'url', true)); g.appendChild(field(m, 'volume', 'Âm lượng (0–1)', 'num'));
+      return el('div', {}, [el('h3', { text: 'Nhạc nền' }), g]);
+    }
+  };
+
+  var collectors = [];
+  function build() {
+    var tabs = $('#tabs'), secs = $('#sections'); tabs.innerHTML = secs.innerHTML = ''; collectors = [];
+    SCHEMA.forEach(function (s, i) {
+      var b = el('button', { type: 'button', text: s[0], onclick: function () { show(i); } }); tabs.appendChild(b);
+      var sec = el('section'), g = el('div', { class: 'grid' });
+      s[1].forEach(function (f) { g.appendChild(field(D, f[0], f[1], f[2], f[3] === 'wide')); });
+      sec.appendChild(g);
+      if (s[2]) { var x = EXTRA[s[2]](); x.style.marginTop = '16px'; sec.appendChild(x); if (x._collect) collectors.push(x._collect); }
+      secs.appendChild(sec);
+    });
+    function show(i) { Array.prototype.forEach.call(tabs.children, function (b, k) { b.classList.toggle('on', k === i); }); Array.prototype.forEach.call(secs.children, function (c, k) { c.classList.toggle('on', k === i); }); }
+    show(0);
+  }
+  function load() { return api('/api/content').then(function (j) { D = j; build(); }); }
+  function save() {
+    collectors.forEach(function (f) { f(); });
+    return api('/api/content', 'POST', D).then(function () { toast('Đã lưu ✔'); }, function (e) { toast('Lỗi lưu: ' + e.message); });
+  }
+  function enter() { $('#login').classList.add('hidden'); $('#app').classList.remove('hidden'); load(); }
+  function boot() {
+    api('/api/me').then(function (j) { if (j.ok) enter(); else $('#login').classList.remove('hidden'); });
+    $('#loginBtn').addEventListener('click', doLogin); $('#pw').addEventListener('keydown', function (e) { if (e.key === 'Enter') doLogin(); });
+    function doLogin() { api('/api/login', 'POST', { password: $('#pw').value }).then(enter, function (e) { $('#loginErr').textContent = e.message; }); }
+    $('#saveBtn').addEventListener('click', save);
+    $('#logoutBtn').addEventListener('click', function () { api('/api/logout', 'POST', {}).then(function () { location.reload(); }); });
+    $('#resetBtn').addEventListener('click', function () { if (confirm('Khôi phục toàn bộ nội dung về mặc định? Hành động này không thể hoàn tác.')) api('/api/content/reset', 'POST', {}).then(load).then(function () { toast('Đã khôi phục mặc định'); }); });
+    window.addEventListener('keydown', function (e) { if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); save(); } });
+  }
+  boot();
+})();

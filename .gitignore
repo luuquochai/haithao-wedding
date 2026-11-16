@@ -1,4 +1,6 @@
-.DS_Store
-Thumbs.db
+_src/
+_dl/
+data/
+uploads/
 node_modules/
-.mingit/
+.DS_Store

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Admin - Chỉnh sửa thiệp</title>
+<style>
+:root{--bg:#f6f3ef;--card:#fff;--ink:#2b1a1c;--mut:#7a6a6c;--line:#e3dad4;--pri:#511419;--pri2:#7a2a30}
+*{box-sizing:border-box}body{margin:0;font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+header{position:sticky;top:0;z-index:10;background:var(--pri);color:#fff;display:flex;gap:10px;align-items:center;padding:10px 16px;flex-wrap:wrap}
+header h1{font-size:16px;margin:0;flex:1;min-width:140px}
+button,.btn{font:inherit;border:0;border-radius:8px;padding:8px 14px;cursor:pointer;background:#fff;color:var(--pri);font-weight:600;text-decoration:none;display:inline-block}
+button.pri{background:#c9a24a;color:#2b1a1c}button.ghost{background:transparent;color:inherit;border:1px solid rgba(255,255,255,.5)}
+button.sm{padding:4px 9px;font-size:12px;background:#eee;color:var(--ink)}button.del{background:#fde4e4;color:#a11}
+main{max-width:980px;margin:0 auto;padding:16px}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+nav.tabs button{background:#fff;border:1px solid var(--line);color:var(--ink)}nav.tabs button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+section{display:none;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}section.on{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;font-size:12px;color:var(--mut)}
+label.f.wide{grid-column:1/-1}
+input[type=text],input[type=date],input[type=time],input[type=url],input[type=number],input[type=password],textarea,select{width:100%;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+textarea{min-height:68px;resize:vertical}
+.img{display:flex;gap:10px;align-items:center}.img img{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:#eee}
+.img .c{flex:1;display:flex;flex-direction:column;gap:6px}
+.row{border:1px dashed var(--line);border-radius:10px;padding:10px;margin-bottom:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;position:relative}
+.row .tools{grid-column:1/-1;display:flex;gap:6px;justify-content:flex-end}
+.hint{color:var(--mut);font-size:12px;margin:0 0 10px}
+#login{max-width:340px;margin:12vh auto;background:#fff;padding:24px;border-radius:14px;border:1px solid var(--line);display:flex;flex-direction:column;gap:12px}
+#login button{background:var(--pri);color:#fff}
+#toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 16px;border-radius:10px;opacity:0;pointer-events:none;transition:.25s}#toast.on{opacity:1}
+.colors{display:flex;gap:10px;flex-wrap:wrap}.colors .row{display:flex;align-items:center;padding:6px 8px;margin:0}
+.hidden{display:none!important}
+@media(max-width:600px){main{padding:10px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="login" class="hidden">
+  <h2 style="margin:0">Đăng nhập Admin</h2>
+  <input id="pw" type="password" placeholder="Mật khẩu" autocomplete="current-password">
+  <button id="loginBtn">Đăng nhập</button>
+  <small id="loginErr" style="color:#a11"></small>
+</div>
+<div id="app" class="hidden">
+  <header>
+    <h1>Admin - Chỉnh sửa thiệp</h1>
+    <a class="btn ghost" href="/?open=1" target="_blank" style="color:#fff">Xem thiệp ↗</a>
+    <button class="ghost" id="resetBtn">Khôi phục mặc định</button>
+    <button class="pri" id="saveBtn">Lưu thay đổi</button>
+    <button class="ghost" id="logoutBtn">Thoát</button>
+  </header>
+  <main><nav class="tabs" id="tabs"></nav><div id="sections"></div></main>
+</div>
+<div id="toast"></div>
+<script src="/admin/admin.js"></script>
+</body>
+</html>
