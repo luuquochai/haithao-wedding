@@ -97,58 +97,7 @@
       "icon": ""
     }
   ],
-  "guestbook": [
-    {
-      "name": "Duy Khang",
-      "message": "Chúc mừng ngày vui của hai bạn, trăm năm hạnh phúc bền lâu!",
-      "time": "2026-07-26T05:30:49.000Z"
-    },
-    {
-      "name": "Lan Chi",
-      "message": "Đẹp đôi quá! Chúc hai bạn sống bên nhau đầu bạc răng long.",
-      "time": "2026-07-26T05:30:49.000Z"
-    },
-    {
-      "name": "Tuấn Anh",
-      "message": "Mừng hạnh phúc hai bạn! Chúc gia đình nhỏ luôn đầy ắp tiếng cười.",
-      "time": "2026-07-26T05:30:49.000Z"
-    },
-    {
-      "name": "Khánh Vy",
-      "message": "Chúc cô dâu chú rể luôn giữ được nụ cười này mãi mãi nhé!",
-      "time": "2026-07-26T05:30:49.000Z"
-    },
-    {
-      "name": "Gia Bảo",
-      "message": "Nhìn thiệp là thấy tình yêu rồi. Chúc hai bạn trăm năm viên mãn!",
-      "time": "2026-07-26T05:30:49.000Z"
-    },
-    {
-      "name": "Phương Anh",
-      "message": "Chúc đám cưới thật trọn vẹn và ấm áp. Hạnh phúc nhé hai bạn!",
-      "time": "2026-07-26T05:30:49.000Z"
-    },
-    {
-      "name": "Minh Đức",
-      "message": "Cuối cùng cũng tới ngày trọng đại, chúc mừng cặp đôi xứng lứa vừa đôi!",
-      "time": "2026-07-26T05:30:49.000Z"
-    },
-    {
-      "name": "Thu Hà",
-      "message": "Chúc hai bạn mãi mãi yêu thương và bên nhau trọn đời!",
-      "time": "2026-07-26T05:30:49.000Z"
-    },
-    {
-      "name": "Hoàng Long",
-      "message": "Mẫu thiệp đẹp quá, tông đỏ đô sang trọng ghê. Chúc mừng hai bạn!",
-      "time": "2026-07-26T05:30:49.000Z"
-    },
-    {
-      "name": "Ngọc Trâm",
-      "message": "Chúc Tuấn Kiệt và Minh Anh trăm năm hạnh phúc, sớm sinh quý tử nhé!",
-      "time": "2026-07-26T05:30:49.000Z"
-    }
-  ],
+  "guestbook": [],
   "guestbookNamePlaceholder": "Nhập tên*",
   "guestbookMessagePlaceholder": "Nhập lời chúc*",
   "gifts": [
