@@ -320,8 +320,15 @@
 
   // ---------- boot ----------
   function load() {
-    return fetch('/api/content', { cache: 'no-store' }).then(function (r) { if (!r.ok) throw 0; return r.json(); })
-      .catch(function () { return fetch('/content.json', { cache: 'no-store' }).then(function (r) { return r.json(); }); });
+    // relative URLs: works at the site root and under a sub-path (GitHub Pages /<repo>/)
+    return fetch('api/content', { cache: 'no-store' }).then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .catch(function () { return fetch('content.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }); })
+      .then(function norm(v) { // legacy "/images/x" -> "images/x"
+        if (typeof v === 'string') return /^\/(images|uploads)\//.test(v) ? v.slice(1) : v;
+        if (Array.isArray(v)) return v.map(norm);
+        if (v && typeof v === 'object') { Object.keys(v).forEach(function (k) { v[k] = norm(v[k]); }); }
+        return v;
+      });
   }
   load().then(function (data) {
     C = data; derive(); applyText();

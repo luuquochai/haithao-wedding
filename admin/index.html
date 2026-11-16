@@ -38,14 +38,20 @@ textarea{min-height:68px;resize:vertical}
 <body>
 <div id="login" class="hidden">
   <h2 style="margin:0">Đăng nhập Admin</h2>
-  <input id="pw" type="password" placeholder="Mật khẩu" autocomplete="current-password">
+  <div id="pwBox"><input id="pw" type="password" placeholder="Mật khẩu" autocomplete="current-password"></div>
+  <div id="ghBox" class="hidden" style="display:flex;flex-direction:column;gap:8px">
+    <p class="hint" style="margin:0">Trang tĩnh: lưu bằng cách commit vào GitHub. Tạo Personal Access Token (fine-grained, repo này, <b>Contents: Read and write</b>) rồi dán vào đây. Token chỉ lưu trong trình duyệt này.</p>
+    <input id="ghRepo" type="text" placeholder="owner/repo">
+    <input id="ghBranch" type="text" placeholder="Nhánh (main)">
+    <input id="ghToken" type="password" placeholder="GitHub token" autocomplete="off">
+  </div>
   <button id="loginBtn">Đăng nhập</button>
   <small id="loginErr" style="color:#a11"></small>
 </div>
 <div id="app" class="hidden">
   <header>
     <h1>Admin - Chỉnh sửa thiệp</h1>
-    <a class="btn ghost" href="/?open=1" target="_blank" style="color:#fff">Xem thiệp ↗</a>
+    <a class="btn ghost" href="../?open=1" target="_blank" style="color:#fff">Xem thiệp ↗</a>
     <button class="ghost" id="resetBtn">Khôi phục mặc định</button>
     <button class="pri" id="saveBtn">Lưu thay đổi</button>
     <button class="ghost" id="logoutBtn">Thoát</button>
@@ -53,6 +59,6 @@ textarea{min-height:68px;resize:vertical}
   <main><nav class="tabs" id="tabs"></nav><div id="sections"></div></main>
 </div>
 <div id="toast"></div>
-<script src="/admin/admin.js"></script>
+<script src="admin.js"></script>
 </body>
 </html>

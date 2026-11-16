@@ -39,7 +39,7 @@
   "seoTitle": "Mẫu Thiệp Minimalism Đỏ Đậm - Thiệp Cưới Tối Giản Sang Trọng",
   "envelopeGreeting": "Thân Mời",
   "openButton": "Mở thiệp",
-  "heroPhoto": "/images/demo/cdecf6cfe2.webp",
+  "heroPhoto": "images/demo/cdecf6cfe2.webp",
   "ceremonyAtPrefix": "VÀO LÚC",
   "ceremonyTime": "09:00",
   "ceremonyDate": "2026-01-03",
@@ -56,13 +56,13 @@
   "creditLink": "https://chungdoi.com",
   "credit": "chungdoi.com",
   "gallery": [
-    "/images/demo/abd329aeb2.webp",
-    "/images/demo/09c78712bd.webp",
-    "/images/demo/d7695e2fed.webp",
-    "/images/demo/07db56b959.webp",
-    "/images/demo/a054d52f9d.webp",
-    "/images/demo/1cfc881768.webp",
-    "/images/demo/e13655d0de.webp"
+    "images/demo/abd329aeb2.webp",
+    "images/demo/09c78712bd.webp",
+    "images/demo/d7695e2fed.webp",
+    "images/demo/07db56b959.webp",
+    "images/demo/a054d52f9d.webp",
+    "images/demo/1cfc881768.webp",
+    "images/demo/e13655d0de.webp"
   ],
   "dressColors": [
     "#511419",
@@ -79,17 +79,17 @@
     {
       "time": "18:00",
       "label": "Khai tiệc",
-      "icon": "/images/themes/minimalism-dark-red/camera.webp"
+      "icon": "images/themes/minimalism-dark-red/camera.webp"
     },
     {
       "time": "18:30",
       "label": "Nghi thức cưới",
-      "icon": "/images/themes/minimalism-dark-red/cake.webp"
+      "icon": "images/themes/minimalism-dark-red/cake.webp"
     },
     {
       "time": "19:00",
       "label": "Cắt bánh & nâng ly",
-      "icon": "/images/themes/minimalism-dark-red/cook.webp"
+      "icon": "images/themes/minimalism-dark-red/cook.webp"
     },
     {
       "time": "20:30",
@@ -157,14 +157,14 @@
       "bank": "Vietcombank",
       "number": "1023456789",
       "holder": "TRAN TUAN KIET",
-      "qr": "/images/qr/groom.png"
+      "qr": "images/qr/groom.png"
     },
     {
       "label": "Cô Dâu - LE MINH ANH",
       "bank": "Techcombank",
       "number": "9988776655",
       "holder": "LE MINH ANH",
-      "qr": "/images/qr/bride.png"
+      "qr": "images/qr/bride.png"
     }
   ],
   "saveQrLabel": "Lưu QR",

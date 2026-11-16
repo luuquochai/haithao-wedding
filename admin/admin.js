@@ -44,13 +44,13 @@
   var toastT;
   function toast(m) { var t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(function () { t.classList.remove('on'); }, 2200); }
   function api(path, method, data) {
-    return fetch(path, { method: method || 'GET', headers: data ? { 'Content-Type': 'application/json' } : {}, body: data ? JSON.stringify(data) : undefined, credentials: 'same-origin' })
+    return fetch('../' + path.replace(/^\//, ''), { method: method || 'GET', headers: data ? { 'Content-Type': 'application/json' } : {}, body: data ? JSON.stringify(data) : undefined, credentials: 'same-origin' })
       .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || r.status); return j; }); });
   }
   function el(tag, attrs, kids) { var e = document.createElement(tag); Object.keys(attrs || {}).forEach(function (k) { if (k === 'class') e.className = attrs[k]; else if (k === 'text') e.textContent = attrs[k]; else if (k.slice(0, 2) === 'on') e.addEventListener(k.slice(2), attrs[k]); else e.setAttribute(k, attrs[k]); }); (kids || []).forEach(function (c) { e.appendChild(c); }); return e; }
   function upload(file) {
     return new Promise(function (ok, no) {
-      var r = new FileReader(); r.onload = function () { api('/api/upload', 'POST', { data: r.result }).then(function (j) { ok(j.url); }, no); }; r.onerror = no; r.readAsDataURL(file);
+      var r = new FileReader(); r.onload = function () { BE.upload(file, r.result).then(ok, no); }; r.onerror = no; r.readAsDataURL(file);
     });
   }
   // generic field: returns element; get/set via obj[key]
@@ -58,11 +58,11 @@
     var lab = el('label', { class: 'f' + (wide ? ' wide' : '') }); lab.appendChild(el('span', { text: label }));
     var v = obj[key] == null ? '' : obj[key], inp;
     if (type === 'img') {
-      var im = el('img', { src: v || '', alt: '' }); inp = el('input', { type: 'text', value: v, placeholder: '/images/... hoặc URL' });
+      var im = el('img', { src: prev(v), alt: '' }); inp = el('input', { type: 'text', value: v, placeholder: 'images/... hoặc URL' });
       var file = el('input', { type: 'file', accept: 'image/*', class: 'hidden' });
       var up = el('button', { type: 'button', class: 'sm', text: 'Tải ảnh lên', onclick: function () { file.click(); } });
-      file.addEventListener('change', function () { if (!file.files[0]) return; up.textContent = 'Đang tải…'; upload(file.files[0]).then(function (u) { inp.value = u; obj[key] = u; im.src = u; toast('Đã tải ảnh lên'); }, function (e) { toast('Lỗi: ' + e.message); }).then(function () { up.textContent = 'Tải ảnh lên'; }); });
-      inp.addEventListener('input', function () { obj[key] = inp.value; im.src = inp.value; });
+      file.addEventListener('change', function () { if (!file.files[0]) return; up.textContent = 'Đang tải…'; upload(file.files[0]).then(function (u) { inp.value = u.url; obj[key] = u.url; im.src = u.preview; toast(BE.mode === 'github' ? 'Đã đưa ảnh lên GitHub' : 'Đã tải ảnh lên'); }, function (e) { toast('Lỗi: ' + e.message); }).then(function () { up.textContent = 'Tải ảnh lên'; }); });
+      inp.addEventListener('input', function () { obj[key] = inp.value; im.src = prev(inp.value); });
       var box = el('div', { class: 'img' }, [im, el('div', { class: 'c' }, [inp, el('div', {}, [up, file])])]);
       lab.appendChild(box); return lab;
     }
@@ -142,19 +142,92 @@
     function show(i) { Array.prototype.forEach.call(tabs.children, function (b, k) { b.classList.toggle('on', k === i); }); Array.prototype.forEach.call(secs.children, function (c, k) { c.classList.toggle('on', k === i); }); }
     show(0);
   }
-  function load() { return api('/api/content').then(function (j) { D = j; build(); }); }
+  // ---------- preview path helper (admin lives in /admin/, assets are one level up) ----------
+  function prev(v) { return !v ? '' : /^(https?:|data:|\/\/)/.test(v) ? v : '../' + String(v).replace(/^\//, ''); }
+
+  // ---------- backends ----------
+  // "server": node server.js (cookie login, data/content.json)   "github": static hosting, commits to the repo via GitHub API
+  var BE = { mode: 'server' };
+  var GH_DEFAULT = { repo: 'luuquochai/haithao-wedding', branch: 'main', token: '' };
+  function ghGuess() {
+    var m = /^([^.]+)\.github\.io$/.exec(location.hostname), seg = location.pathname.split('/')[1];
+    return m && seg && seg !== 'admin' ? m[1] + '/' + seg : GH_DEFAULT.repo;
+  }
+  function ghCfg() { try { return Object.assign({}, GH_DEFAULT, { repo: ghGuess() }, JSON.parse(localStorage.getItem('ghcfg') || '{}')); } catch (e) { return Object.assign({}, GH_DEFAULT, { repo: ghGuess() }); } }
+  function b64utf8(str) { var b = new TextEncoder().encode(str), s = ''; for (var i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); }
+  function unb64utf8(b64) { var s = atob(b64.replace(/\s/g, '')), b = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) b[i] = s.charCodeAt(i); return new TextDecoder().decode(b); }
+  function gh(path, method, body) {
+    var c = ghCfg();
+    return fetch('https://api.github.com/repos/' + c.repo + path, { method: method || 'GET', headers: { Accept: 'application/vnd.github+json', Authorization: 'Bearer ' + c.token, 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var e = new Error(j.message || r.status); e.status = r.status; throw e; } return j; }); });
+  }
+  var ghSha = null;
+  var SERVER = {
+    mode: 'server',
+    check: function () { return api('/api/me').then(function (j) { return !!j.ok; }); },
+    login: function () { return api('/api/login', 'POST', { password: $('#pw').value }); },
+    logout: function () { return api('/api/logout', 'POST', {}); },
+    load: function () { return api('/api/content'); },
+    save: function (d) { return api('/api/content', 'POST', d); },
+    upload: function (file, dataUrl) { return api('/api/upload', 'POST', { data: dataUrl }).then(function (j) { return { url: j.url.replace(/^\//, ''), preview: dataUrl }; }); },
+    reset: function () { return api('/api/content/reset', 'POST', {}); }
+  };
+  var GITHUB = {
+    mode: 'github',
+    check: function () { return Promise.resolve(!!ghCfg().token); },
+    login: function () {
+      var c = { repo: $('#ghRepo').value.trim(), branch: $('#ghBranch').value.trim() || 'main', token: $('#ghToken').value.trim() };
+      localStorage.setItem('ghcfg', JSON.stringify(c));
+      return gh('').then(function (r) { if (!r.permissions || !r.permissions.push) { localStorage.removeItem('ghcfg'); throw new Error('Token không có quyền ghi (Contents: Read and write) vào repo này'); } });
+    },
+    logout: function () { localStorage.removeItem('ghcfg'); return Promise.resolve(); },
+    load: function () {
+      var c = ghCfg();
+      return gh('/contents/content.json?ref=' + encodeURIComponent(c.branch)).then(function (r) { ghSha = r.sha; return JSON.parse(unb64utf8(r.content)); });
+    },
+    save: function (d) {
+      var c = ghCfg();
+      return gh('/contents/content.json', 'PUT', { message: 'Update content via admin', content: b64utf8(JSON.stringify(d, null, 2)), sha: ghSha, branch: c.branch }).then(function (r) { ghSha = r.content.sha; });
+    },
+    upload: function (file, dataUrl) {
+      var c = ghCfg(), m = /^data:image\/([a-z+]+);base64,(.+)$/.exec(dataUrl);
+      if (!m) return Promise.reject(new Error('Chỉ hỗ trợ ảnh'));
+      var ext = { jpeg: 'jpg', 'svg+xml': 'svg' }[m[1]] || m[1], bytes = Uint8Array.from(atob(m[2]), function (ch) { return ch.charCodeAt(0); });
+      return crypto.subtle.digest('SHA-1', bytes).then(function (h) {
+        var name = Array.prototype.map.call(new Uint8Array(h), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('').slice(0, 12) + '.' + ext, p = 'uploads/' + name;
+        return gh('/contents/' + p, 'PUT', { message: 'Upload ' + name, content: m[2], branch: c.branch })
+          .catch(function (e) { if (e.status === 422) return null; throw e; }) // same hash => already uploaded
+          .then(function () { return { url: p, preview: dataUrl }; });
+      });
+    },
+    reset: null
+  };
+
+  function load() { return BE.load().then(function (j) { D = j; build(); }); }
   function save() {
     collectors.forEach(function (f) { f(); });
-    return api('/api/content', 'POST', D).then(function () { toast('Đã lưu ✔'); }, function (e) { toast('Lỗi lưu: ' + e.message); });
+    var b = $('#saveBtn'); b.disabled = true;
+    return BE.save(D).then(function () { toast(BE.mode === 'github' ? 'Đã commit lên GitHub ✔ (Pages cập nhật sau ~1 phút)' : 'Đã lưu ✔'); }, function (e) { toast('Lỗi lưu: ' + e.message); }).then(function () { b.disabled = false; });
   }
-  function enter() { $('#login').classList.add('hidden'); $('#app').classList.remove('hidden'); load(); }
+  function enter() { $('#login').classList.add('hidden'); $('#app').classList.remove('hidden'); load().catch(function (e) { toast('Lỗi tải: ' + e.message); }); }
+  function showLogin() {
+    $('#login').classList.remove('hidden');
+    if (BE.mode === 'github') {
+      var c = ghCfg(); $('#pwBox').classList.add('hidden'); $('#ghBox').classList.remove('hidden');
+      $('#ghRepo').value = c.repo; $('#ghBranch').value = c.branch; $('#ghToken').value = c.token || '';
+    }
+  }
   function boot() {
-    api('/api/me').then(function (j) { if (j.ok) enter(); else $('#login').classList.remove('hidden'); });
+    // static hosting has no /api -> GitHub mode
+    api('/api/me').then(function (j) { return typeof j.ok === 'boolean' ? SERVER : GITHUB; }, function () { return GITHUB; }).then(function (b) {
+      BE = b; if (!BE.reset) $('#resetBtn').classList.add('hidden');
+      return BE.check();
+    }).then(function (ok) { if (ok) enter(); else showLogin(); });
     $('#loginBtn').addEventListener('click', doLogin); $('#pw').addEventListener('keydown', function (e) { if (e.key === 'Enter') doLogin(); });
-    function doLogin() { api('/api/login', 'POST', { password: $('#pw').value }).then(enter, function (e) { $('#loginErr').textContent = e.message; }); }
+    function doLogin() { $('#loginErr').textContent = ''; BE.login().then(enter, function (e) { $('#loginErr').textContent = e.message; }); }
     $('#saveBtn').addEventListener('click', save);
-    $('#logoutBtn').addEventListener('click', function () { api('/api/logout', 'POST', {}).then(function () { location.reload(); }); });
-    $('#resetBtn').addEventListener('click', function () { if (confirm('Khôi phục toàn bộ nội dung về mặc định? Hành động này không thể hoàn tác.')) api('/api/content/reset', 'POST', {}).then(load).then(function () { toast('Đã khôi phục mặc định'); }); });
+    $('#logoutBtn').addEventListener('click', function () { BE.logout().then(function () { location.reload(); }); });
+    $('#resetBtn').addEventListener('click', function () { if (BE.reset && confirm('Khôi phục toàn bộ nội dung về mặc định? Hành động này không thể hoàn tác.')) BE.reset().then(load).then(function () { toast('Đã khôi phục mặc định'); }); });
     window.addEventListener('keydown', function (e) { if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); save(); } });
   }
   boot();
