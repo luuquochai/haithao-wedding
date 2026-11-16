@@ -159,7 +159,11 @@
   function gh(path, method, body) {
     var c = ghCfg();
     return fetch('https://api.github.com/repos/' + c.repo + path, { method: method || 'GET', headers: { Accept: 'application/vnd.github+json', Authorization: 'Bearer ' + c.token, 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined })
-      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) { var e = new Error(j.message || r.status); e.status = r.status; throw e; } return j; }); });
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) {
+          var msg = j.message || String(r.status);
+          if (/not accessible|Bad credentials|Not Found/i.test(msg) && r.status !== 422) msg += ' — kiểm tra token: (1) Resource owner phải là tài khoản chủ repo; (2) Repository access gồm repo này; (3) Permissions → Contents: Read and write. Hoặc dùng classic token có quyền "repo".';
+          var e = new Error(msg); e.status = r.status; throw e;
+        } return j; }); });
   }
   var ghSha = null;
   var SERVER = {
