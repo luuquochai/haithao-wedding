@@ -37,7 +37,7 @@
     ['Lịch trình', [['timelineTitle', 'Tiêu đề', 't']], 'timeline'],
     ['Sổ lưu bút', [['guestbookTitle', 'Tiêu đề', 't'], ['guestbookSubmit', 'Nút gửi', 't'], ['guestbookNamePlaceholder', 'Placeholder tên', 't'], ['guestbookMessagePlaceholder', 'Placeholder lời chúc', 't']], 'guestbook'],
     ['Hộp quà', [['giftTitle', 'Tiêu đề', 't'], ['giftHint', 'Dòng gợi ý', 't'], ['saveQrLabel', 'Nhãn nút lưu QR', 't']], 'gifts'],
-    ['Chân trang & Nhạc', [['thankYou', 'Lời cảm ơn', 'area', 'wide'], ['credit', 'Chữ credit', 't'], ['creditLink', 'Link credit', 'url']], 'music']
+    ['Chân trang & Nhạc', [['thankYou', 'Lời cảm ơn', 'area', 'wide']], 'music']
   ];
 
   // ---------- helpers ----------

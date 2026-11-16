@@ -64,7 +64,6 @@
     var q = encodeURIComponent(C.venueAddress || '');
     $('[data-render="map"]').src = C.mapEmbedUrl || ('https://www.google.com/maps?q=' + q + '&output=embed');
     $('[data-render="dir-link"]').href = C.mapDirectionsUrl || ('https://www.google.com/maps/dir/?api=1&destination=' + q);
-    $('[data-render="credit-link"]').href = C.creditLink || '#';
   }
   function renderTimeline() {
     var items = C.timeline || [], h = '', n = items.length;
