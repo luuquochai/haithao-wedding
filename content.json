@@ -42,7 +42,7 @@
   "heroPhoto": "images/demo/cdecf6cfe2.webp",
   "ceremonyAtPrefix": "VÀO LÚC",
   "ceremonyTime": "09:00",
-  "ceremonyDate": "2026-01-03",
+  "ceremonyDate": "2026-12-20",
   "ceremonyLunar": "Tức ngày 15 tháng 11 năm Ất Tỵ",
   "partyDate": "2026-01-03",
   "partyTime": "18:00",
@@ -73,7 +73,7 @@
   "timeline": [
     {
       "time": "17:00",
-      "label": "Đón khách",
+      "label": "Đón khách /",
       "icon": ""
     },
     {
