@@ -329,11 +329,16 @@
         return v;
       });
   }
+  // the HTML ships default text; stay hidden until the real content is applied (no flash of old names)
+  var revealed = false;
+  function reveal() { if (revealed) return; revealed = true; document.documentElement.classList.remove('loading'); }
+  setTimeout(reveal, 4000);
   load().then(function (data) {
     C = data; derive(); applyText();
     renderCalendar(); renderLinks(); renderTimeline(); renderDress(); renderGuestbook(); renderGifts(); renderCountdown();
     parentSize(); fitNames(); initAlbum(); initGift(); initGuestbook(); initMusic(); initEnvelope();
+    requestAnimationFrame(function () { requestAnimationFrame(reveal); });
     // clicking anywhere also starts the music (as on the original page)
     document.addEventListener('click', function () { var a = $('#bgm'); if (!$('#envelope') && a && a.src && a.paused && !a._started) { a._started = true; playMusic(); } }, true);
-  });
+  }, reveal);
 })();
