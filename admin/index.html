@@ -11,7 +11,7 @@
 header{position:sticky;top:0;z-index:10;background:var(--pri);color:#fff;display:flex;gap:10px;align-items:center;padding:10px 16px;flex-wrap:wrap}
 header h1{font-size:16px;margin:0;flex:1;min-width:140px}
 button,.btn{font:inherit;border:0;border-radius:8px;padding:8px 14px;cursor:pointer;background:#fff;color:var(--pri);font-weight:600;text-decoration:none;display:inline-block}
-button.pri{background:#c9a24a;color:#2b1a1c}button.ghost{background:transparent;color:inherit;border:1px solid rgba(255,255,255,.5)}
+button.pri{background:#c9a24a;color:#2b1a1c}button.ghost,a.btn.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.5)}
 button.sm{padding:4px 9px;font-size:12px;background:#eee;color:var(--ink)}button.del{background:#fde4e4;color:#a11}
 main{max-width:980px;margin:0 auto;padding:16px}
 nav.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
@@ -54,7 +54,7 @@ textarea{min-height:68px;resize:vertical}
 <div id="app" class="hidden">
   <header>
     <h1>Admin - Chỉnh sửa thiệp</h1>
-    <a class="btn ghost" href="../?open=1" target="_blank" style="color:#fff">Xem thiệp ↗</a>
+    <a class="btn ghost" href="../?open=1" target="_blank">Xem thiệp ↗</a>
     <button class="ghost" id="resetBtn">Khôi phục mặc định</button>
     <button class="pri" id="saveBtn">Lưu thay đổi</button>
     <button class="ghost" id="logoutBtn">Thoát</button>
