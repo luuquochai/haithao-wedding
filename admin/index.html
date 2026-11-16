@@ -44,7 +44,10 @@ textarea{min-height:68px;resize:vertical}
     <input id="ghRepo" type="text" placeholder="owner/repo">
     <input id="ghBranch" type="text" placeholder="Nhánh (main)">
     <input id="ghToken" type="password" placeholder="GitHub token" autocomplete="off">
+    <input id="ghNewPw" type="text" placeholder="Đặt mật khẩu admin (VD: admin123)" autocomplete="off">
+    <p class="hint" style="margin:0">Chỉ làm một lần: token được mã hoá bằng mật khẩu này và lưu vào <code>admin/auth.json</code>. Lần sau chỉ cần gõ mật khẩu.</p>
   </div>
+  <a id="resetAuth" href="#" class="hidden" style="font-size:12px;color:#7a6a6c">Đổi token / mật khẩu</a>
   <button id="loginBtn">Đăng nhập</button>
   <small id="loginErr" style="color:#a11"></small>
 </div>

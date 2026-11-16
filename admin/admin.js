@@ -176,9 +176,23 @@
     mode: 'github',
     check: function () { return Promise.resolve(!!ghCfg().token); },
     login: function () {
-      var c = { repo: $('#ghRepo').value.trim(), branch: $('#ghBranch').value.trim() || 'main', token: $('#ghToken').value.trim() };
+      var verify = function () { return gh('').then(function (r) { if (!r.permissions || !r.permissions.push) { localStorage.removeItem('ghcfg'); throw new Error('Token không có quyền ghi (Contents: Read and write) vào repo này'); } }); };
+      if (AUTH && !SETUP) { // normal login: password decrypts the token stored in admin/auth.json
+        var pw = $('#pw').value;
+        return decryptToken(AUTH, pw).then(function (token) {
+          localStorage.setItem('ghcfg', JSON.stringify({ repo: AUTH.repo, branch: AUTH.branch, token: token }));
+          return verify();
+        }, function () { throw new Error('Sai mật khẩu'); });
+      }
+      // one-time setup: token + chosen password -> commit encrypted admin/auth.json
+      var c = { repo: $('#ghRepo').value.trim(), branch: $('#ghBranch').value.trim() || 'main', token: $('#ghToken').value.trim() }, np = $('#ghNewPw').value;
+      if (!np) return Promise.reject(new Error('Hãy đặt mật khẩu admin (VD: admin123)'));
       localStorage.setItem('ghcfg', JSON.stringify(c));
-      return gh('').then(function (r) { if (!r.permissions || !r.permissions.push) { localStorage.removeItem('ghcfg'); throw new Error('Token không có quyền ghi (Contents: Read and write) vào repo này'); } });
+      return verify().then(function () { return encryptToken(c, np); }).then(function (blob) {
+        return gh('/contents/admin/auth.json?ref=' + encodeURIComponent(c.branch)).then(function (r) { return r.sha; }, function () { return undefined; }).then(function (sha) {
+          return gh('/contents/admin/auth.json', 'PUT', { message: 'Set admin password', content: b64utf8(JSON.stringify(blob)), sha: sha, branch: c.branch });
+        });
+      });
     },
     logout: function () { localStorage.removeItem('ghcfg'); return Promise.resolve(); },
     load: function () {
@@ -210,19 +224,43 @@
     return BE.save(D).then(function () { toast(BE.mode === 'github' ? 'Đã commit lên GitHub ✔ (Pages cập nhật sau ~1 phút)' : 'Đã lưu ✔'); }, function (e) { toast('Lỗi lưu: ' + e.message); }).then(function () { b.disabled = false; });
   }
   function enter() { $('#login').classList.add('hidden'); $('#app').classList.remove('hidden'); load().catch(function (e) { toast('Lỗi tải: ' + e.message); }); }
+  // ---------- password-protected token (static hosting): PBKDF2 -> AES-GCM, blob lives in admin/auth.json ----------
+  var AUTH = null, SETUP = false;
+  var b2a = function (u8) { var s = ''; for (var i = 0; i < u8.length; i++) s += String.fromCharCode(u8[i]); return btoa(s); };
+  var a2b = function (s) { return Uint8Array.from(atob(s), function (ch) { return ch.charCodeAt(0); }); };
+  function deriveKey(pw, salt) {
+    return crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']).then(function (k) {
+      return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: salt, iterations: 200000, hash: 'SHA-256' }, k, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+    });
+  }
+  function encryptToken(c, pw) {
+    var salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+    return deriveKey(pw, salt).then(function (k) { return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, k, new TextEncoder().encode(c.token)); })
+      .then(function (ct) { return { repo: c.repo, branch: c.branch, salt: b2a(salt), iv: b2a(iv), ct: b2a(new Uint8Array(ct)) }; });
+  }
+  function decryptToken(a, pw) {
+    return deriveKey(pw, a2b(a.salt)).then(function (k) { return crypto.subtle.decrypt({ name: 'AES-GCM', iv: a2b(a.iv) }, k, a2b(a.ct)); })
+      .then(function (pt) { return new TextDecoder().decode(pt); });
+  }
   function showLogin() {
     $('#login').classList.remove('hidden');
     if (BE.mode === 'github') {
-      var c = ghCfg(); $('#pwBox').classList.add('hidden'); $('#ghBox').classList.remove('hidden');
+      var c = ghCfg();
       $('#ghRepo').value = c.repo; $('#ghBranch').value = c.branch; $('#ghToken').value = c.token || '';
+      var setup = !AUTH || SETUP;
+      $('#pwBox').classList.toggle('hidden', setup); $('#ghBox').classList.toggle('hidden', !setup);
+      $('#resetAuth').classList.toggle('hidden', setup || !AUTH);
     }
   }
   function boot() {
     // static hosting has no /api -> GitHub mode
     api('/api/me').then(function (j) { return typeof j.ok === 'boolean' ? SERVER : GITHUB; }, function () { return GITHUB; }).then(function (b) {
       BE = b; if (!BE.reset) $('#resetBtn').classList.add('hidden');
-      return BE.check();
+      if (BE.mode !== 'github') return BE.check();
+      return fetch('auth.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+        .then(function (a) { AUTH = a && a.ct ? a : null; return BE.check(); });
     }).then(function (ok) { if (ok) enter(); else showLogin(); });
+    $('#resetAuth').addEventListener('click', function (e) { e.preventDefault(); SETUP = true; showLogin(); });
     $('#loginBtn').addEventListener('click', doLogin); $('#pw').addEventListener('keydown', function (e) { if (e.key === 'Enter') doLogin(); });
     function doLogin() { $('#loginErr').textContent = ''; BE.login().then(enter, function (e) { $('#loginErr').textContent = e.message; }); }
     $('#saveBtn').addEventListener('click', save);
