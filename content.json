@@ -52,7 +52,7 @@
   "calendarEventTitle": "Đám cưới {groomFull} & {brideFull}",
   "calendarEventDetails": "Tiệc cưới của {groomFull} & {brideFull} tại {venueAddress}",
   "mapEmbedUrl": "",
-  "mapDirectionsUrl": "",
+  "mapDirectionsUrl": "https://maps.app.goo.gl/NveVPuYVVwjxBzCz8?g_st=ic",
   "creditLink": "https://chungdoi.com",
   "credit": "chungdoi.com",
   "gallery": [
