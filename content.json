@@ -29,8 +29,8 @@
   "venueTitle": "Tiệc cưới sẽ tổ chức tại: TƯ GIA NỮ",
   "venueAddress": "Thôn Phú Sơn, xã Lục Sơn, TP Bắc Ninh\n (Thôn Bãi Đá, xã Bình Sơn cũ)",
   "directionsLabel": "Chỉ đường",
-  "dressTitle": "DRESS CODE",
-  "dressDesc": "Trang phục dự tiệc",
+  "dressTitle": "",
+  "dressDesc": "",
   "timelineTitle": "LỊCH TRÌNH NGÀY CƯỚI",
   "guestbookTitle": "Sổ lưu bút",
   "guestbookSubmit": "GỬI LỜI CHÚC",
@@ -64,12 +64,7 @@
     "images/demo/1cfc881768.webp",
     "images/demo/e13655d0de.webp"
   ],
-  "dressColors": [
-    "#511419",
-    "#8C3A3F",
-    "#C9A24A",
-    "#ECE4D8"
-  ],
+  "dressColors": [],
   "timeline": [
     {
       "time": "17:00",
