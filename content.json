@@ -34,7 +34,7 @@
   "timelineTitle": "",
   "guestbookTitle": "Sổ lưu bút",
   "guestbookSubmit": "GỬI LỜI CHÚC",
-  "giftTitle": "Hộp Quà Mừng",
+  "giftTitle": "",
   "thankYou": "Sự hiện diện của quý khách là niềm vinh hạnh của gia đình chúng tôi!",
   "seoTitle": "Mai Thảo & Quốc Hải",
   "envelopeGreeting": "Thân Mời",
@@ -69,27 +69,12 @@
   "guestbook": [],
   "guestbookNamePlaceholder": "Nhập tên*",
   "guestbookMessagePlaceholder": "Nhập lời chúc*",
-  "gifts": [
-    {
-      "label": "Chú Rể - TRAN TUAN KIET",
-      "bank": "Vietcombank",
-      "number": "1023456789",
-      "holder": "TRAN TUAN KIET",
-      "qr": "images/qr/groom.png"
-    },
-    {
-      "label": "Cô Dâu - LE MINH ANH",
-      "bank": "Techcombank",
-      "number": "9988776655",
-      "holder": "LE MINH ANH",
-      "qr": "images/qr/bride.png"
-    }
-  ],
-  "saveQrLabel": "Lưu QR",
+  "gifts": [],
+  "saveQrLabel": "",
   "music": {
     "enabled": true,
     "url": "https://cdn.chungdoi.com/music/50-nam-ve-sau.mp3",
     "volume": 0.5
   },
-  "giftHint": "Nhấn để mở"
+  "giftHint": ""
 }
