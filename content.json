@@ -51,7 +51,7 @@
   "countdownPast": "Đã diễn ra",
   "calendarEventTitle": "Đám cưới {groomFull} & {brideFull}",
   "calendarEventDetails": "Tiệc cưới của {groomFull} & {brideFull} tại {venueAddress}",
-  "mapEmbedUrl": "https://maps.app.goo.gl/NveVPuYVVwjxBzCz8?g_st=ic",
+  "mapEmbedUrl": "",
   "mapDirectionsUrl": "https://maps.app.goo.gl/NveVPuYVVwjxBzCz8?g_st=ic",
   "creditLink": "https://chungdoi.com",
   "credit": "chungdoi.com",
