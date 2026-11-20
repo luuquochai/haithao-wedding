@@ -33,6 +33,8 @@
     $$('[data-img]').forEach(function (el) { var v = C[el.getAttribute('data-img')]; if (v) el.src = v; });
     if (C.seoTitle) document.title = C.seoTitle;
     // no reception time -> drop that item; the party start time stays centred
+    // empty RSVP label -> no RSVP button
+    var rb = $('#rsvpBtn'); if (rb) rb.parentNode.style.display = C.rsvpButton ? '' : 'none';
     var rt = $('[data-t="receptionTime"]'); if (rt) rt.parentNode.style.display = C.receptionTime ? '' : 'none';
   }
 
