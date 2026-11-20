@@ -118,6 +118,8 @@
     }).join('');
   }
   function renderGifts() {
+    // no gift accounts -> hide the whole 'Hộp Quà Mừng' block (title, envelope button, dialog)
+    var gblk = $('#giftBtn').closest('div.flex.flex-col.items-center.justify-center.py-8'); if (gblk) gblk.style.display = (C.gifts || []).length ? '' : 'none';
     var SAVE = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>';
     $('[data-render="gifts"]').innerHTML = (C.gifts || []).map(function (g, i) {
       return '<div class="flex flex-col items-center flex-1 max-w-[180px] sm:max-w-none"><h3 class="mb-2 text-xs min-h-[2rem] flex items-start justify-center font-medium text-center line-clamp-2" style="color:#511419">' + esc(g.label) + '</h3>' +
