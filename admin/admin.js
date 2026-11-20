@@ -31,7 +31,8 @@
       ['calendarEventDetails', 'Chi tiết sự kiện lịch', 'area', 'wide'], ['rsvpButton', 'Nút xác nhận tham dự', 't']]],
     ['Bản đồ & Dress code', [
       ['venueTitle', 'Tiêu đề địa điểm', 't'], ['venueAddress', 'Địa chỉ tổ chức', 'area', 'wide'],
-      ['mapEmbedUrl', 'URL nhúng bản đồ (để trống = tự tạo từ địa chỉ)', 'url', 'wide'],
+      ['mapImage', 'Ảnh bản đồ (nếu có, hiển thị thay cho bản đồ nhúng; bấm vào ảnh sẽ mở chỉ đường)', 'img', 'wide'],
+      ['mapEmbedUrl', 'Mã nhúng bản đồ: dán cả thẻ <iframe> từ Google Maps → Chia sẻ → Nhúng bản đồ (link rút gọn maps.app.goo.gl không nhúng được; để trống = tự tạo từ địa chỉ)', 'area', 'wide'],
       ['mapDirectionsUrl', 'URL chỉ đường (để trống = tự tạo)', 'url', 'wide'], ['directionsLabel', 'Nhãn nút chỉ đường', 't'],
       ['dressTitle', 'Tiêu đề dress code', 't'], ['dressDesc', 'Mô tả dress code', 't']], 'dress'],
     ['Lịch trình', [['timelineTitle', 'Tiêu đề', 't']], 'timeline'],

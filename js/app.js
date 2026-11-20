@@ -61,9 +61,21 @@
       var en = new Date(st.getTime() + 2 * 3600 * 1000);
       a.href = 'https://www.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(tpl(C.calendarEventTitle)) + '&dates=' + f(st) + '/' + f(en) + '&ctz=Asia/Ho_Chi_Minh&details=' + encodeURIComponent(tpl(C.calendarEventDetails)) + '&location=' + encodeURIComponent(C.venueAddress || '');
     }
-    var q = encodeURIComponent(C.venueAddress || '');
-    $('[data-render="map"]').src = C.mapEmbedUrl || ('https://www.google.com/maps?q=' + q + '&output=embed');
-    $('[data-render="dir-link"]').href = C.mapDirectionsUrl || ('https://www.google.com/maps/dir/?api=1&destination=' + q);
+    var q = encodeURIComponent(String(C.venueAddress || '').replace(/\s*\n\s*/g, ', '));
+    var dir = C.mapDirectionsUrl || ('https://www.google.com/maps/dir/?api=1&destination=' + q);
+    // embed source: accepts a plain URL or a pasted <iframe ... src="..."> snippet. Share links (maps.app.goo.gl)
+    // cannot be framed by Google, so they are ignored and the map is built from the address instead.
+    var emb = String(C.mapEmbedUrl || '').trim(), im = /src\s*=\s*["']([^"']+)["']/i.exec(emb);
+    if (im) emb = im[1].replace(/&amp;/g, '&');
+    if (!/^https:\/\/(www\.)?google\.[a-z.]+\/maps\/(embed|.*output=embed)|^https:\/\/maps\.google\.[a-z.]+\/.*output=embed/i.test(emb)) emb = '';
+    var frame = $('[data-render="map"]');
+    if (C.mapImage) { // a static map picture replaces the iframe; clicking it opens directions
+      var a = document.createElement('a'); a.href = dir; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      a.className = frame.className.replace('overflow-hidden', 'overflow-hidden block'); a.style.cssText = 'display:block';
+      var img = document.createElement('img'); img.src = C.mapImage; img.alt = 'Bản đồ'; img.className = 'h-full w-full object-cover';
+      a.appendChild(img); frame.parentNode.replaceChild(a, frame);
+    } else frame.src = emb || ('https://www.google.com/maps?q=' + q + '&output=embed');
+    $('[data-render="dir-link"]').href = dir;
   }
   function renderTimeline() {
     var items = C.timeline || [], h = '', n = items.length;
