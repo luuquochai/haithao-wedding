@@ -67,7 +67,10 @@
     // cannot be framed by Google, so they are ignored and the map is built from the address instead.
     var emb = String(C.mapEmbedUrl || '').trim(), im = /src\s*=\s*["']([^"']+)["']/i.exec(emb);
     if (im) emb = im[1].replace(/&amp;/g, '&');
-    if (!/^https:\/\/(www\.)?google\.[a-z.]+\/maps\/(embed|.*output=embed)|^https:\/\/maps\.google\.[a-z.]+\/.*output=embed/i.test(emb)) emb = '';
+    var ft = /[?&]ftid=0x[0-9a-f]+:0x([0-9a-f]+)/i.exec(emb); // long Google Maps link with a place id -> exact place embed
+    if (ft && window.BigInt) emb = 'https://www.google.com/maps?cid=' + BigInt('0x' + ft[1]).toString() + '&output=embed';
+    // use the URL as entered when it is an embeddable Google Maps URL (/maps/embed... or ...output=embed)
+    if (!/^https:\/\/((www|maps)\.)?google\.[a-z.]+\/maps(\/embed|[/?].*[?&]output=embed)/i.test(emb)) emb = '';
     var frame = $('[data-render="map"]');
     if (C.mapImage) { // a static map picture replaces the iframe; clicking it opens directions
       var a = document.createElement('a'); a.href = dir; a.target = '_blank'; a.rel = 'noopener noreferrer';
