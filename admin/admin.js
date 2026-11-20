@@ -62,7 +62,7 @@
       var im = el('img', { src: prev(v), alt: '' }); inp = el('input', { type: 'text', value: v, placeholder: 'images/... hoặc URL' });
       var file = el('input', { type: 'file', accept: 'image/*', class: 'hidden' });
       var up = el('button', { type: 'button', class: 'sm', text: 'Tải ảnh lên', onclick: function () { file.click(); } });
-      file.addEventListener('change', function () { if (!file.files[0]) return; up.textContent = 'Đang tải…'; upload(file.files[0]).then(function (u) { inp.value = u.url; obj[key] = u.url; im.src = u.preview; toast(BE.mode === 'github' ? 'Đã đưa ảnh lên GitHub' : 'Đã tải ảnh lên'); }, function (e) { toast('Lỗi: ' + e.message); }).then(function () { up.textContent = 'Tải ảnh lên'; }); });
+      file.addEventListener('change', function () { if (!file.files[0]) return; up.textContent = 'Đang tải…'; upload(file.files[0]).then(function (u) { inp.value = u.url; obj[key] = u.url; im.src = u.preview; PREV[u.url] = u.preview; toast(BE.mode === 'github' ? 'Đã đưa ảnh lên GitHub' : 'Đã tải ảnh lên'); }, function (e) { toast('Lỗi: ' + e.message); }).then(function () { up.textContent = 'Tải ảnh lên'; }); });
       inp.addEventListener('input', function () { obj[key] = inp.value; im.src = prev(inp.value); });
       var box = el('div', { class: 'img' }, [im, el('div', { class: 'c' }, [inp, el('div', {}, [up, file])])]);
       lab.appendChild(box); return lab;
@@ -149,6 +149,7 @@
   // ---------- backends ----------
   // "server": node server.js (cookie login, data/content.json)   "github": static hosting, commits to the repo via GitHub API
   var BE = { mode: 'server' };
+  var PREV = {}; // path -> data URL of images uploaded in this session (not yet published by Pages)
   var GH_DEFAULT = { repo: 'luuquochai/haithao-wedding', branch: 'main', token: '' };
   function ghGuess() {
     var m = /^([^.]+)\.github\.io$/.exec(location.hostname), seg = location.pathname.split('/')[1];
@@ -206,7 +207,10 @@
     },
     save: function (d) {
       var c = ghCfg();
-      return gh('/contents/content.json', 'PUT', { message: 'Update content via admin', content: b64utf8(JSON.stringify(d, null, 2)), sha: ghSha, branch: c.branch }).then(function (r) { ghSha = r.content.sha; });
+      GITHUB.warn = '';
+      return ensureOg(d).then(function () {
+        return gh('/contents/content.json', 'PUT', { message: 'Update content via admin', content: b64utf8(JSON.stringify(d, null, 2)), sha: ghSha, branch: c.branch });
+      }).then(function (r) { ghSha = r.content.sha; return patchIndex(d, c).catch(function (e) { GITHUB.warn = 'Ảnh/tiêu đề khi chia sẻ link chưa cập nhật: ' + e.message; }); });
     },
     upload: function (file, dataUrl) {
       var c = ghCfg(), m = /^data:image\/([a-z+]+);base64,(.+)$/.exec(dataUrl);
@@ -222,11 +226,41 @@
     reset: null
   };
 
+  // ---------- link preview (Open Graph): image 1200x630 from the first photo + tags in index.html ----------
+  function siteBase() { return new URL('../', location.href).href; }
+  function makeOgImage(src) {
+    return new Promise(function (ok, no) {
+      var im = new Image(); im.crossOrigin = 'anonymous';
+      im.onload = function () {
+        var W = 1200, H = 630, r = Math.max(W / im.naturalWidth, H / im.naturalHeight), sw = W / r, sh = H / r;
+        var sx = (im.naturalWidth - sw) / 2, sy = (im.naturalHeight - sh) * 0.1; // keep the top (faces) of tall photos
+        var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+        var cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, W, H); cx.drawImage(im, sx, sy, sw, sh, 0, 0, W, H);
+        try { ok(cv.toDataURL('image/jpeg', 0.85)); } catch (e) { no(e); }
+      };
+      im.onerror = function () { no(new Error('không đọc được ảnh đầu trang')); };
+      im.src = src;
+    });
+  }
+  function ensureOg(d) {
+    if (!d.heroPhoto || d.ogFrom === d.heroPhoto) return Promise.resolve();
+    var src = PREV[d.heroPhoto] || prev(d.heroPhoto);
+    return makeOgImage(src).then(function (data) { return GITHUB.upload(null, data); }).then(function (u) { d.ogImage = u.url; d.ogFrom = d.heroPhoto; })
+      .catch(function (e) { GITHUB.warn = 'Chưa tạo được ảnh chia sẻ: ' + e.message; });
+  }
+  function patchIndex(d, c) {
+    return gh('/contents/index.html?ref=' + encodeURIComponent(c.branch)).then(function (r) {
+      var html = unb64utf8(r.content), out = OG.patch(html, d, siteBase());
+      if (out === html) return;
+      return gh('/contents/index.html', 'PUT', { message: 'Update link preview tags', content: b64utf8(out), sha: r.sha, branch: c.branch });
+    });
+  }
+
   function load() { return BE.load().then(function (j) { D = j; build(); }); }
   function save() {
     collectors.forEach(function (f) { f(); });
     var b = $('#saveBtn'); b.disabled = true;
-    return BE.save(D).then(function () { toast(BE.mode === 'github' ? 'Đã commit lên GitHub ✔ (Pages cập nhật sau ~1 phút)' : 'Đã lưu ✔'); }, function (e) { toast('Lỗi lưu: ' + e.message); }).then(function () { b.disabled = false; });
+    return BE.save(D).then(function () { toast(BE.mode === 'github' ? 'Đã commit lên GitHub ✔ (Pages cập nhật sau ~1 phút)' + (GITHUB.warn ? ' — ' + GITHUB.warn : '') : 'Đã lưu ✔'); }, function (e) { toast('Lỗi lưu: ' + e.message); }).then(function () { b.disabled = false; });
   }
   function enter() { $('#login').classList.add('hidden'); $('#app').classList.remove('hidden'); load().catch(function (e) { toast('Lỗi tải: ' + e.message); }); }
   // ---------- password-protected token (static hosting): PBKDF2 -> AES-GCM, blob lives in admin/auth.json ----------

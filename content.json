@@ -80,5 +80,7 @@
     "volume": 0.5
   },
   "giftHint": "",
-  "mapImage": ""
+  "mapImage": "",
+  "ogImage": "images/og.jpg",
+  "ogFrom": "uploads/3882f030577c.jpg"
 }
