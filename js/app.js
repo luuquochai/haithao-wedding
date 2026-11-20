@@ -90,9 +90,14 @@
         '<span aria-hidden="true" class="relative flex items-center justify-center self-stretch"><span class="' + line + '" style="background-color:color-mix(in srgb, #ece4d8 40%, transparent)"></span><span class="relative block h-2.5 w-2.5 rounded-full" style="background-color:#ece4d8;box-shadow:0 0 0 2px color-mix(in srgb, #ece4d8 13%, transparent)"></span></span>' +
         '<span class="text-[13px] md:text-[15px]" style="color:rgba(236,228,216,0.7);' + FONT + '"><span dir="auto">' + esc(it.label) + '</span></span></li>';
     });
-    $('[data-render="timeline"]').innerHTML = h;
+    var ol = $('[data-render="timeline"]'); ol.innerHTML = h;
+    // empty timeline -> hide the whole section (card + flower)
+    var tsec = ol.closest('section'); if (tsec) tsec.style.display = n ? '' : 'none';
   }
   function renderDress() {
+    var dwrap = $('[data-render="dress"]').parentNode;
+    // nothing to show -> hide the dress code block
+    dwrap.style.display = (C.dressTitle || C.dressDesc || (C.dressColors || []).length) ? '' : 'none';
     $('[data-render="dress"]').innerHTML = (C.dressColors || []).map(function (c) {
       var light = /^#?e[c-f]e4d8$/i.test(c);
       return '<div class="w-10 h-10 md:w-12 md:h-12 rounded-full shadow-md" style="background-color:' + esc(c) + ';border:' + (light ? '1.5px solid #51141930' : 'none') + '"></div>';
