@@ -8,7 +8,7 @@
   // base: site root URL ending with "/", e.g. https://user.github.io/repo/
   function describe(c) {
     var d = fmtDate(c.partyDate || c.ceremonyDate), place = String(c.venueAddress || '').split('\n')[0].trim();
-    return 'Kính mời quý khách đến chung vui ngày trọng đại của chúng tôi.' + (d ? ' Tổ chức ngày ' + d : '') + (place ? ' tại ' + place : '') + '.';
+    return 'Trân trọng kính mời quý khách đến chung vui ngày trọng đại cùng gia đình chúng tôi.' + (d ? ' Tổ chức ngày ' + d : '') + (place ? ' tại ' + place : '') + '.';
   }
   function build(c, base) {
     var title = c.seoTitle || 'Thiệp mời cưới', desc = describe(c), img = abs(base, c.ogImage || c.heroPhoto), url = base;
