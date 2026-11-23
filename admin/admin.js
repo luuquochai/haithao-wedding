@@ -7,7 +7,7 @@
   var SCHEMA = [
     ['Phong bì & SEO', [
       ['seoTitle', 'Tiêu đề trang (tab trình duyệt)', 't', 'wide'],
-      ['envelopeGreeting', 'Lời mời trên phong bì', 't'], ['openButton', 'Nút mở thiệp', 't'],
+      ['envelopeGreeting', 'Lời mời trên phong bì', 't'], ['autoScroll', 'Tự cuộn xuống khi mở thiệp (1 = bật, 0 = tắt)', 'num'], ['autoScrollSpeed', 'Tốc độ tự cuộn (px/giây, gợi ý 40–80)', 'num'], ['openButton', 'Nút mở thiệp', 't'],
       ['groomShort', 'Tên ngắn chú rể', 't'], ['brideShort', 'Tên ngắn cô dâu', 't']]],
     ['Đầu trang', [
       ['saveTheDate', 'Dòng "Save The Date"', 't'], ['heroPhoto', 'Ảnh polaroid đầu trang', 'img', 'wide']]],

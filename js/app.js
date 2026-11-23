@@ -289,12 +289,37 @@
     var a = $('#bgm'); if (!a || !a.src) return;
     try { if (a.readyState < 2) a.load(); var p = a.play(); if (p && p.catch) p.catch(function () {}); } catch (e) {}
   }
+  // ---------- auto scroll after the envelope opens ----------
+  // slow, steady scroll to the bottom; stops as soon as the visitor touches / scrolls / clicks / types, or reaches the end
+  function startAutoScroll() {
+    if (!(+C.autoScroll)) return;
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var speed = Math.max(10, +C.autoScrollSpeed || 50), y = window.scrollY || 0, last = 0, raf = 0, stopped = false;
+    var evs = ['wheel', 'touchstart', 'mousedown', 'keydown', 'focusin'];
+    function stop() { if (stopped) return; stopped = true; cancelAnimationFrame(raf); evs.forEach(function (e) { window.removeEventListener(e, stop, true); }); }
+    evs.forEach(function (e) { window.addEventListener(e, stop, { capture: true, passive: true }); });
+    function step(t) {
+      if (stopped) return;
+      if (!last) last = t;
+      var dt = Math.min(64, t - last); last = t;
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      if (y >= max - 1) { stop(); return; }
+      var ease = Math.min(1, (t - start) / 1200); // ease in during the first 1.2s
+      y = Math.min(max, y + speed * ease * dt / 1000);
+      window.scrollTo(0, y);
+      raf = requestAnimationFrame(step);
+    }
+    var start = 0;
+    setTimeout(function () { if (stopped) return; start = performance.now(); raf = requestAnimationFrame(step); }, 900);
+  }
+
   function initEnvelope() {
     var env = $('#envelope'), state = 'idle', done = false, lastClick = 0;
     document.documentElement.classList.add('env-lock');
     var inv = $('[data-landing-screenshot-id="invite-renderer"]'); if (!/[?&]open=1(&|$)/.test(location.search)) inv.style.display = 'none'; // original mounts the invitation only after opening
     ambientHearts();
-    function finish() { if (done) return; done = true; env.parentNode.removeChild(env); inv.style.display = ''; document.documentElement.classList.remove('env-lock'); window.scrollTo(0, 0); window.dispatchEvent(new Event('resize')); }
+    var viaClick = false;
+    function finish() { if (done) return; done = true; env.parentNode.removeChild(env); inv.style.display = ''; document.documentElement.classList.remove('env-lock'); window.scrollTo(0, 0); window.dispatchEvent(new Event('resize')); if (viaClick) startAutoScroll(); }
     function particles() {
       var h = '';
       for (var i = 0; i < 32; i++) {
@@ -309,7 +334,7 @@
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
       e.preventDefault();
       if (state !== 'idle') return;
-      state = 'opening'; lastClick = Date.now();
+      state = 'opening'; lastClick = Date.now(); viaClick = true;
       playMusic(); chime();
       var seal = $('#envSeal'), card = seal.nextElementSibling;
       seal.style.animation = 'seal-break 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards';
