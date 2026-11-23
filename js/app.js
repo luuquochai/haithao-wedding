@@ -115,11 +115,21 @@
   function fmtNow() { return new Date().toISOString(); }
   var LS = 'wedding-guestbook-v1';
   function localComments() { try { return JSON.parse(localStorage.getItem(LS) || '[]'); } catch (e) { return []; } }
+  // approved wishes live in a Google Apps Script web app (C.guestbookApi); without it, wishes stay local to the visitor
+  var approved = null;
+  function guestbookItems() {
+    if (C.guestbookApi) return (approved || []).slice().sort(function (x, y) { return (y.time || 0) - (x.time || 0); }).concat(C.guestbook || []);
+    return localComments().slice().reverse().concat(C.guestbook || []);
+  }
   function renderGuestbook() {
-    var list = localComments().slice().reverse().concat(C.guestbook || []);
-    $('[data-render="guestbook"]').innerHTML = list.map(function (g) {
+    $('[data-render="guestbook"]').innerHTML = guestbookItems().map(function (g) {
       return '<div class="rounded-[8px] border p-4 text-sm" style="border-color:#51141955;background-color:rgba(255,255,255,0.55)"><div class="flex items-start justify-between"><span class="font-semibold" style="color:#511419">' + esc(g.name) + '</span><span class="text-xs opacity-70">' + esc(fmtTime(g.time)) + '</span></div><p class="mt-2 leading-relaxed">' + esc(g.message) + '</p></div>';
     }).join('');
+  }
+  function loadApproved() {
+    if (!C.guestbookApi) return;
+    fetch(C.guestbookApi + (C.guestbookApi.indexOf('?') < 0 ? '?' : '&') + 't=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { return r.json(); }).then(function (j) { approved = j.items || []; renderGuestbook(); }).catch(function () {});
   }
   function renderGifts() {
     // no gift accounts -> hide the whole 'Hộp Quà Mừng' block (title, envelope button, dialog)
@@ -228,13 +238,25 @@
     $('[data-close="gift"]').addEventListener('click', function () { dlg.close(); });
   }
   function initGuestbook() {
-    $('#gbForm').addEventListener('submit', function (e) {
+    var form = $('#gbForm'), notice = document.createElement('p');
+    notice.id = 'gbNotice'; notice.className = 'mt-3 text-center text-xs'; notice.style.cssText = 'color:#511419;display:none';
+    form.firstElementChild.appendChild(notice);
+    function say(t) { notice.textContent = t; notice.style.display = t ? '' : 'none'; }
+    form.addEventListener('submit', function (e) {
       e.preventDefault();
       var f = e.target, name = f.querySelector('input').value.trim(), msg = f.querySelector('textarea').value.trim();
       if (!name || !msg) return;
-      var arr = localComments(); arr.push({ name: name, message: msg, time: fmtNow() });
-      try { localStorage.setItem(LS, JSON.stringify(arr.slice(-20))); } catch (er) {}
-      f.reset(); renderGuestbook();
+      if (!C.guestbookApi) { // no backend configured: keep it on this device only
+        var arr = localComments(); arr.push({ name: name, message: msg, time: fmtNow() });
+        try { localStorage.setItem(LS, JSON.stringify(arr.slice(-20))); } catch (er) {}
+        f.reset(); renderGuestbook(); return;
+      }
+      var btn = f.querySelector('button[type=submit]'); btn.disabled = true; say('');
+      fetch(C.guestbookApi, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'submit', name: name, message: msg }) })
+        .then(function (r) { return r.json(); })
+        .then(function (j) { if (j.error) throw new Error(j.error); f.reset(); say('Cảm ơn bạn! Lời chúc đã được gửi và sẽ hiển thị sau khi được duyệt.'); })
+        .catch(function () { say('Chưa gửi được lời chúc, vui lòng thử lại sau.'); })
+        .then(function () { btn.disabled = false; });
     });
     var gi = $('#gbForm input'), gt = $('#gbForm textarea');
     if (C.guestbookNamePlaceholder) gi.placeholder = C.guestbookNamePlaceholder;
@@ -371,7 +393,7 @@
   load().then(function (data) {
     C = data; derive(); applyText();
     applyGuest();
-    renderCalendar(); renderLinks(); renderTimeline(); renderDress(); renderGuestbook(); renderGifts(); renderCountdown();
+    renderCalendar(); renderLinks(); renderTimeline(); renderDress(); renderGuestbook(); loadApproved(); renderGifts(); renderCountdown();
     parentSize(); fitNames(); initAlbum(); initGift(); initGuestbook(); initMusic(); initEnvelope();
     requestAnimationFrame(function () { requestAnimationFrame(reveal); });
     // clicking anywhere also starts the music (as on the original page)

@@ -36,7 +36,7 @@
       ['mapDirectionsUrl', 'URL chỉ đường (để trống = tự tạo)', 'url', 'wide'], ['directionsLabel', 'Nhãn nút chỉ đường', 't'],
       ['dressTitle', 'Tiêu đề dress code', 't'], ['dressDesc', 'Mô tả dress code', 't']], 'dress'],
     ['Lịch trình', [['timelineTitle', 'Tiêu đề', 't']], 'timeline'],
-    ['Sổ lưu bút', [['guestbookTitle', 'Tiêu đề', 't'], ['guestbookSubmit', 'Nút gửi', 't'], ['guestbookNamePlaceholder', 'Placeholder tên', 't'], ['guestbookMessagePlaceholder', 'Placeholder lời chúc', 't']], 'guestbook'],
+    ['Sổ lưu bút', [['guestbookTitle', 'Tiêu đề', 't'], ['guestbookApi', 'Link Apps Script (nơi nhận & duyệt lời chúc; để trống = lời chúc chỉ lưu trên máy người gửi)', 'url', 'wide'], ['guestbookSubmit', 'Nút gửi', 't'], ['guestbookNamePlaceholder', 'Placeholder tên', 't'], ['guestbookMessagePlaceholder', 'Placeholder lời chúc', 't']], 'guestbook'],
     ['Hộp quà', [['giftTitle', 'Tiêu đề', 't'], ['giftHint', 'Dòng gợi ý', 't'], ['saveQrLabel', 'Nhãn nút lưu QR', 't']], 'gifts'],
     ['Khách mời', [['guestPrefix', 'Chữ trước tên khách (VD: TRÂN TRỌNG KÍNH MỜI:)', 't', 'wide'], ['partyTitle', 'Chữ khi KHÔNG có tên khách (link thường)', 't', 'wide']], 'guests'],
     ['Chân trang & Nhạc', [['thankYou', 'Lời cảm ơn', 'area', 'wide']], 'music']
@@ -114,6 +114,54 @@
       return listEditor(D.timeline, function () { return { time: '', label: '', icon: '' }; }, function (it) { return [field(it, 'time', 'Giờ', 't'), field(it, 'label', 'Nội dung', 't'), field(it, 'icon', 'Icon (để trống = không có)', 'img', true)]; }, 'Thêm mốc', 'Các mốc lịch trình ngày cưới.');
     },
     guestbook: function () {
+      var wrap = el('div', {}), panel = el('div'), KEY = 'gbkey';
+      function api_() { return String(D.guestbookApi || '').trim(); }
+      function call(method, body) {
+        var u = api_();
+        if (!u) return Promise.reject(new Error('Chưa nhập link Apps Script'));
+        var key = localStorage.getItem(KEY) || '';
+        var req = method === 'GET'
+          ? fetch(u + (u.indexOf('?') < 0 ? '?' : '&') + 'action=list&key=' + encodeURIComponent(key) + '&t=' + Date.now(), { cache: 'no-store' })
+          : fetch(u, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ key: key }, body)) });
+        return req.then(function (r) { return r.json(); }).then(function (j) { if (j.error) throw new Error(j.error === 'unauthorized' ? 'Sai mã quản trị' : j.error); return j; });
+      }
+      function fmt(ms) { var d = new Date(ms); return isNaN(d.getTime()) ? '' : d.getHours() + ':' + ('0' + d.getMinutes()).slice(-2) + ' ' + d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear(); }
+      function item(g, buttons) {
+        var row = el('div', { class: 'row' });
+        row.appendChild(el('div', { style: 'grid-column:1/-1' }, [el('b', { text: g.name }), el('span', { class: 'hint', text: '  ' + fmt(g.time), style: 'margin-left:8px' }), el('div', { text: g.message, style: 'white-space:pre-wrap;margin-top:4px' })]));
+        row.appendChild(el('div', { class: 'tools' }, buttons));
+        return row;
+      }
+      function act(action, id, ask) {
+        if (ask && !confirm(ask)) return;
+        call('POST', { action: action, id: id }).then(function () { toast('Đã cập nhật'); refresh(); }, function (e) { toast('Lỗi: ' + e.message); });
+      }
+      var list = el('div'), status = el('p', { class: 'hint' });
+      function refresh() {
+        list.innerHTML = ''; status.textContent = 'Đang tải…';
+        call('GET').then(function (j) {
+          var items = (j.items || []).slice().sort(function (a, b) { return b.time - a.time; });
+          var pend = items.filter(function (x) { return x.status !== 'approved'; }), ok = items.filter(function (x) { return x.status === 'approved'; });
+          status.textContent = '';
+          list.appendChild(el('h3', { text: 'Chờ duyệt (' + pend.length + ')' }));
+          if (!pend.length) list.appendChild(el('p', { class: 'hint', text: 'Không có lời chúc nào đang chờ.' }));
+          pend.forEach(function (g) { list.appendChild(item(g, [el('button', { type: 'button', class: 'sm', style: 'background:#d9f2dd', text: 'Duyệt', onclick: function () { act('approve', g.id); } }), el('button', { type: 'button', class: 'sm del', text: 'Xoá', onclick: function () { act('delete', g.id, 'Xoá lời chúc của ' + g.name + '? Không thể hoàn tác.'); } })])); });
+          list.appendChild(el('h3', { text: 'Đang hiển thị trên thiệp (' + ok.length + ')' }));
+          if (!ok.length) list.appendChild(el('p', { class: 'hint', text: 'Chưa có lời chúc nào được duyệt.' }));
+          ok.forEach(function (g) { list.appendChild(item(g, [el('button', { type: 'button', class: 'sm', text: 'Bỏ duyệt (ẩn)', onclick: function () { act('unapprove', g.id); } }), el('button', { type: 'button', class: 'sm del', text: 'Xoá', onclick: function () { act('delete', g.id, 'Xoá lời chúc của ' + g.name + '? Không thể hoàn tác.'); } })])); });
+        }, function (e) { status.textContent = 'Không tải được: ' + e.message; });
+      }
+      var keyInp = el('input', { type: 'password', placeholder: 'Mã quản trị (ADMIN_KEY trong script)', autocomplete: 'off' }); keyInp.value = localStorage.getItem(KEY) || '';
+      panel.appendChild(el('h3', { text: 'Duyệt lời chúc' }));
+      panel.appendChild(el('p', { class: 'hint', text: 'Lời chúc khách gửi sẽ chờ duyệt; chỉ lời chúc bấm "Duyệt" mới hiện trên thiệp (có hiệu lực ngay, không cần chờ Pages). Cài đặt một lần: mở ' + 'docs/guestbook-apps-script.gs trong repo, làm theo hướng dẫn đầu file, rồi dán link ứng dụng web vào ô "Link Apps Script" ở trên và bấm Lưu thay đổi.' }));
+      panel.appendChild(el('div', { class: 'img' }, [keyInp, el('button', { type: 'button', class: 'sm', text: 'Lưu mã & tải danh sách', onclick: function () { localStorage.setItem(KEY, keyInp.value.trim()); refresh(); } }), el('button', { type: 'button', class: 'sm', text: 'Tải lại', onclick: refresh })]));
+      panel.appendChild(status); panel.appendChild(list);
+      wrap.appendChild(panel);
+      if (api_() && localStorage.getItem(KEY)) refresh(); else status.textContent = api_() ? 'Nhập mã quản trị để xem danh sách.' : 'Chưa cấu hình: nhập link Apps Script ở trên.';
+      var samples = EXTRA.guestbookSamples(); samples.style.marginTop = '20px'; wrap.appendChild(samples);
+      return wrap;
+    },
+    guestbookSamples: function () {
       D.guestbook = D.guestbook || [];
       return el('div', {}, [el('h3', { text: 'Lời chúc mẫu' }), listEditor(D.guestbook, function () { return { name: '', message: '', time: '' }; }, function (it) { return [field(it, 'name', 'Tên', 't'), field(it, 'time', 'Thời gian (ISO, VD 2026-07-26T05:30:49Z; hiển thị theo giờ máy khách)', 't'), field(it, 'message', 'Lời chúc', 'area', true)]; }, 'Thêm lời chúc')]);
     },
