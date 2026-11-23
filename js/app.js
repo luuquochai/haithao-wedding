@@ -343,6 +343,15 @@
     f(); window.addEventListener('resize', f);
   }
 
+  // personalised link: ?k=<slug> picks a guest/group from content.guests; ?to=<free text> shows any name; default keeps partyTitle
+  function applyGuest() {
+    var q = new URLSearchParams(location.search), name = '', k = q.get('k');
+    if (k) { var g = (C.guests || []).filter(function (x) { return x.slug === k; })[0]; if (g) name = g.name; }
+    if (!name && q.get('to')) name = q.get('to').slice(0, 120);
+    var el = $('[data-t="partyTitle"]');
+    if (name && el) el.textContent = (C.guestPrefix || '') + ' ' + name;
+  }
+
   // ---------- boot ----------
   function load() {
     // relative URLs: works at the site root and under a sub-path (GitHub Pages /<repo>/)
@@ -361,6 +370,7 @@
   setTimeout(reveal, 4000);
   load().then(function (data) {
     C = data; derive(); applyText();
+    applyGuest();
     renderCalendar(); renderLinks(); renderTimeline(); renderDress(); renderGuestbook(); renderGifts(); renderCountdown();
     parentSize(); fitNames(); initAlbum(); initGift(); initGuestbook(); initMusic(); initEnvelope();
     requestAnimationFrame(function () { requestAnimationFrame(reveal); });

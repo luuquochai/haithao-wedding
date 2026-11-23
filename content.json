@@ -82,5 +82,28 @@
   "giftHint": "",
   "mapImage": "",
   "ogImage": "images/og.jpg",
-  "ogFrom": "uploads/3882f030577c.jpg"
+  "ogFrom": "uploads/3882f030577c.jpg",
+  "guestPrefix": "TRÂN TRỌNG KÍNH MỜI:",
+  "guests": [
+    {
+      "name": "Anh, em lớp K6 NN Lục Nam",
+      "slug": "k6-nn-luc-nam"
+    },
+    {
+      "name": "Anh, chị, em lớp 04 NN Bắc Giang",
+      "slug": "04-nn-bac-giang"
+    },
+    {
+      "name": "Các bạn Hội đồng niên 68",
+      "slug": "dong-nien-68"
+    },
+    {
+      "name": "Hội lớp 12C khóa 23",
+      "slug": "12c-khoa-23"
+    },
+    {
+      "name": "Anh chị em K20P Lục Nam",
+      "slug": "k20p-luc-nam"
+    }
+  ]
 }

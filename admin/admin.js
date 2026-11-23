@@ -38,10 +38,12 @@
     ['Lịch trình', [['timelineTitle', 'Tiêu đề', 't']], 'timeline'],
     ['Sổ lưu bút', [['guestbookTitle', 'Tiêu đề', 't'], ['guestbookSubmit', 'Nút gửi', 't'], ['guestbookNamePlaceholder', 'Placeholder tên', 't'], ['guestbookMessagePlaceholder', 'Placeholder lời chúc', 't']], 'guestbook'],
     ['Hộp quà', [['giftTitle', 'Tiêu đề', 't'], ['giftHint', 'Dòng gợi ý', 't'], ['saveQrLabel', 'Nhãn nút lưu QR', 't']], 'gifts'],
+    ['Khách mời', [['guestPrefix', 'Chữ trước tên khách (VD: TRÂN TRỌNG KÍNH MỜI:)', 't', 'wide'], ['partyTitle', 'Chữ khi KHÔNG có tên khách (link thường)', 't', 'wide']], 'guests'],
     ['Chân trang & Nhạc', [['thankYou', 'Lời cảm ơn', 'area', 'wide']], 'music']
   ];
 
   // ---------- helpers ----------
+  function slugify(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
   var toastT;
   function toast(m) { var t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(function () { t.classList.remove('on'); }, 2200); }
   function api(path, method, data) {
@@ -118,6 +120,25 @@
     gifts: function () {
       D.gifts = D.gifts || [];
       return el('div', {}, [el('h3', { text: 'Tài khoản mừng cưới' }), listEditor(D.gifts, function () { return { label: '', bank: '', number: '', holder: '', qr: '' }; }, function (it) { return [field(it, 'label', 'Tiêu đề (VD: Chú Rể - TÊN)', 't'), field(it, 'bank', 'Ngân hàng', 't'), field(it, 'number', 'Số tài khoản', 't'), field(it, 'holder', 'Chủ tài khoản', 't'), field(it, 'qr', 'Ảnh QR', 'img', true)]; }, 'Thêm tài khoản')]);
+    },
+    guests: function () {
+      D.guests = D.guests || [];
+      var base = location.href.replace(/[?#].*$/, '').replace(/admin\/(index\.html)?$/, '');
+      var wrap = el('div', {}, [el('h3', { text: 'Danh sách khách / tập thể' }), el('p', { class: 'hint', text: 'Mỗi dòng là một link riêng: ' + base + '?k=<mã>. Tên hiển thị trong thiệp sau chữ "TRÂN TRỌNG KÍNH MỜI:". Link thường (không có ?k=) hiện chữ mặc định (QUÝ KHÁCH). Mẹo: ' + base + '?to=Tên bất kỳ cũng hiển thị tên đó mà không cần thêm vào danh sách.' })]);
+      wrap.appendChild(listEditor(D.guests, function () { return { name: '', slug: '' }; }, function (it) {
+        var link = el('input', { type: 'text', readonly: 'readonly' }), copy = el('button', { type: 'button', class: 'sm', text: 'Sao chép link' });
+        function refresh() { link.value = it.slug ? base + '?k=' + encodeURIComponent(it.slug) : '(chưa có mã)'; }
+        var slugField = field(it, 'slug', 'Mã trong link (chữ không dấu, không khoảng trắng)', 't'), slugInp = slugField.querySelector('input');
+        var nameField = field(it, 'name', 'Tên hiển thị', 't', true), nameInp = nameField.querySelector('input');
+        var auto = !it.slug || it.slug === slugify(it.name);
+        nameInp.addEventListener('input', function () { if (auto) { it.slug = slugify(it.name); slugInp.value = it.slug; } refresh(); });
+        slugInp.addEventListener('input', function () { auto = false; it.slug = slugify(slugInp.value); refresh(); });
+        copy.addEventListener('click', function () { refresh(); (navigator.clipboard ? navigator.clipboard.writeText(link.value) : Promise.reject()).then(function () { toast('Đã sao chép link'); }, function () { link.select(); toast('Hãy nhấn Ctrl+C để sao chép'); }); });
+        refresh();
+        return [nameField, slugField, el('label', { class: 'f wide' }, [el('span', { text: 'Link gửi cho khách' }), el('div', { class: 'img' }, [link, copy])])];
+      }, 'Thêm khách / tập thể'));
+      wrap._collect = function () { D.guests = D.guests.filter(function (g) { return g.name; }).map(function (g) { g.slug = slugify(g.slug || g.name); return g; }); };
+      return wrap;
     },
     music: function () {
       D.music = D.music || { enabled: true, url: '', volume: .5 };
